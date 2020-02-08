@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`matches snapshot 1`] = `
+<form
+  onSubmit={[Function]}
+>
+  <div>
+    <input
+      autoCapitalize="off"
+      data-testid="inputid"
+      name="email"
+      onChange={[Function]}
+      placeholder="email"
+      required={true}
+      type="text"
+    />
+  </div>
+  <input
+    className="Submit"
+    type="submit"
+  />
+</form>
+`;

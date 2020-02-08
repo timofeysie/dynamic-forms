@@ -12,6 +12,7 @@ const InputTextField = ({
 }: IProps) => (
   <div>
     <input
+      data-testid="inputid"
       name={name}
       required={required}
       type="text"
