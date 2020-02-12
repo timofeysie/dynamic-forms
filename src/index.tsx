@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+/* eslint-disable */
+import 'react-datepicker/dist/react-datepicker.css';
+/* eslint-enable */
 
 ReactDOM.render(<App />, document.getElementById('root'));
 

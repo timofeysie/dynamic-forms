@@ -4,10 +4,16 @@ import DynamicForm from './components/dynamicForms/DynamicForm';
 
 const fields = [
   {
-    name: 'email',
+    name: 'name',
     required: true,
     input_type: 'text',
-    placeholder: 'email',
+    placeholder: 'name',
+    validationString: '(\\w.+\\s).+',
+    validationMessage: 'First and last name required',
+  }, {
+    name: 'dob',
+    required: true,
+    input_type: 'datepicker',
   },
 ];
 

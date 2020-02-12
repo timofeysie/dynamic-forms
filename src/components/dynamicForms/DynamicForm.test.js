@@ -9,10 +9,16 @@ import renderer from "react-test-renderer";
 let container = null;
 const fields = [
   {
-    name: 'email',
+    name: 'name',
     required: true,
     input_type: 'text',
-    placeholder: 'email',
+    placeholder: 'name',
+    validationString: '(\\w.+\\s).+',
+    validationMessage: 'First and last name required',
+  }, {
+    name: 'dob',
+    required: true,
+    input_type: 'datepicker',
   },
 ];
 beforeEach(() => {
@@ -44,6 +50,8 @@ it("renders with react DOM", () => {
   const div = document.createElement("div");
   ReactDOM.render(<DynamicForm  fields={fields}/>, div);
 });
+
+// Input field tests
 
 // type="text"
 it("renders an input with a type", () => {
@@ -79,3 +87,11 @@ it("matches snapshot", () => {
   const tree = renderer.create(<DynamicForm fields={fields}></DynamicForm>).toJSON();
   expect(tree).toMatchSnapshot();
 })
+
+// datepicker field tests
+
+// name="datepicker"
+it("renders an input with a name datepicker", () => {
+    const { getByTestId } = render2(<DynamicForm fields={fields}/>);
+    expect(getByTestId("datepicker-id")).toHaveAttribute('name', 'datepicker');
+});
