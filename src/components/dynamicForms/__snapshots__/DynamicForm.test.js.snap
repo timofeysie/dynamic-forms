@@ -8,12 +8,38 @@ exports[`matches snapshot 1`] = `
     <input
       autoCapitalize="off"
       data-testid="inputid"
-      name="email"
+      name="name"
+      onBlur={[Function]}
       onChange={[Function]}
-      placeholder="email"
+      placeholder="name"
       required={true}
       type="text"
     />
+  </div>
+  <div>
+    <div
+      className="react-datepicker-wrapper"
+    >
+      <div
+        className="react-datepicker__input-container"
+      >
+        <input
+          autoComplete="off"
+          className=""
+          disabled={false}
+          name="dob"
+          onBlur={[Function]}
+          onChange={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          readOnly={false}
+          required={true}
+          type="text"
+          value="02/13/2020"
+        />
+      </div>
+    </div>
   </div>
   <input
     className="Submit"

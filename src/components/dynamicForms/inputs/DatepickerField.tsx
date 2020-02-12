@@ -1,7 +1,6 @@
 import React from 'react';
-/* eslint-disable */
 import DatePicker from 'react-datepicker';
-/* eslint-enable */
+
 interface IProps {
     name: string;
     required: boolean;
@@ -16,7 +15,7 @@ const DatepickerField = ({
       selected={new Date()}
       name={name}
       required={required}
-      data-testid="datepicker-id"
+      data-testid="datepickerid"
       autoComplete="off"
       onChange={(date: Date) => {
         const newEvent = {

@@ -37,12 +37,11 @@ it("renders a form with an input and submit button", () => {
     render(<DynamicForm fields={fields}/>, container);
   });
   const form = container.querySelector('form');
-  expect(form.length).toBe(2);
+  expect(form.length).toBe(3);
 
   const element1 = document.forms[0];
-  expect(element1.children[0].tagName).toBe('DIV');
   expect(element1.children[0].children[0].type).toBe('text');
-  expect(element1.children[1].tagName).toBe('INPUT');
+  expect(element1.children[1].tagName).toBe('DIV');
   expect(element1.children[1].type).toBe('submit');
 });
 
@@ -60,15 +59,15 @@ it("renders an input with a type", () => {
 });
 
 // name="email"
-it("renders an input with a name equal to email", () => {
+it("renders an input with a name equal to name", () => {
   const { getByTestId } = render2(<DynamicForm fields={fields}/>);
-  expect(getByTestId("inputid")).toHaveAttribute('name', 'email');
+  expect(getByTestId("inputid")).toHaveAttribute('name', 'name');
 });
 
 // placeholder="email"
 it("renders an input with a name equal to email", () => {
   const { getByTestId } = render2(<DynamicForm fields={fields}/>);
-  expect(getByTestId("inputid")).toHaveAttribute('placeholder', 'email');
+  expect(getByTestId("inputid")).toHaveAttribute('placeholder', 'name');
 });
 
 // required={true}
@@ -93,5 +92,5 @@ it("matches snapshot", () => {
 // name="datepicker"
 it("renders an input with a name datepicker", () => {
     const { getByTestId } = render2(<DynamicForm fields={fields}/>);
-    expect(getByTestId("datepicker-id")).toHaveAttribute('name', 'datepicker');
+    expect(getByTestId("datepickerid")).toHaveAttribute('name', 'dob');
 });
