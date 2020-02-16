@@ -10,12 +10,11 @@ interface IProps {
 const DatepickerField = ({
   name, required, handleChange,
 }: IProps) => (
-  <div>
+  <div data-testid="datepickerid">
     <DatePicker
       selected={new Date()}
       name={name}
       required={required}
-      data-testid="datepickerid"
       autoComplete="off"
       onChange={(date: Date) => {
         const newEvent = {

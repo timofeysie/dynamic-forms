@@ -16,7 +16,9 @@ exports[`matches snapshot 1`] = `
       type="text"
     />
   </div>
-  <div>
+  <div
+    data-testid="datepickerid"
+  >
     <div
       className="react-datepicker-wrapper"
     >
@@ -36,7 +38,7 @@ exports[`matches snapshot 1`] = `
           readOnly={false}
           required={true}
           type="text"
-          value="02/13/2020"
+          value="02/17/2020"
         />
       </div>
     </div>

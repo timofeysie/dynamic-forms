@@ -3,7 +3,7 @@ import { render, unmountComponentAtNode } from "react-dom";
 import { act } from "react-dom/test-utils";
 import ReactDOM from 'react-dom';
 import DynamicForm from "./DynamicForm";
-import { render as render2 } from "@testing-library/react";
+import { render as testing_lib_render } from "@testing-library/react";
 import renderer from "react-test-renderer";
 
 let container = null;
@@ -41,8 +41,10 @@ it("renders a form with an input and submit button", () => {
 
   const element1 = document.forms[0];
   expect(element1.children[0].children[0].type).toBe('text');
-  expect(element1.children[1].tagName).toBe('DIV');
-  expect(element1.children[1].type).toBe('submit');
+  //expect(element1.children[0].children[0].elemenType).toBe('div');
+  //expect(element1.children[1].tagName).toBe('DIV');
+  // the last element should be the submit button
+  expect(element1.children[element1.children.length-1].type).toBe('submit');
 });
 
 it("renders with react DOM", () => {
@@ -54,31 +56,31 @@ it("renders with react DOM", () => {
 
 // type="text"
 it("renders an input with a type", () => {
-  const { getByTestId } = render2(<DynamicForm fields={fields}/>);
+  const { getByTestId } = testing_lib_render(<DynamicForm fields={fields}/>);
   expect(getByTestId("inputid")).toHaveAttribute('type', 'text');
 });
 
 // name="email"
 it("renders an input with a name equal to name", () => {
-  const { getByTestId } = render2(<DynamicForm fields={fields}/>);
+  const { getByTestId } = testing_lib_render(<DynamicForm fields={fields}/>);
   expect(getByTestId("inputid")).toHaveAttribute('name', 'name');
 });
 
 // placeholder="email"
 it("renders an input with a name equal to email", () => {
-  const { getByTestId } = render2(<DynamicForm fields={fields}/>);
+  const { getByTestId } = testing_lib_render(<DynamicForm fields={fields}/>);
   expect(getByTestId("inputid")).toHaveAttribute('placeholder', 'name');
 });
 
 // required={true}
 it("renders an input with a name equal to email", () => {
-  const { getByTestId } = render2(<DynamicForm fields={fields}/>);
+  const { getByTestId } = testing_lib_render(<DynamicForm fields={fields}/>);
   expect(getByTestId("inputid")).toHaveAttribute('required');
 });
 
 // why are attribute and property the same???
 it("renders an input with a type", () => {
-  const { getByTestId } = render2(<DynamicForm fields={fields}/>);
+  const { getByTestId } = testing_lib_render(<DynamicForm fields={fields}/>);
   expect(getByTestId("inputid")).toHaveProperty('required');
 });
 
@@ -88,9 +90,8 @@ it("matches snapshot", () => {
 })
 
 // datepicker field tests
-
-// name="datepicker"
-it("renders an input with a name datepicker", () => {
-    const { getByTestId } = render2(<DynamicForm fields={fields}/>);
-    expect(getByTestId("datepickerid")).toHaveAttribute('name', 'dob');
+// (see issue #2 for details)
+it("has an input container", () => {
+  const { getAllByTestId } = testing_lib_render(<DynamicForm fields={fields}/>);
+  expect(getByTestId("getAllByTestId").getElementsByTagName("input")).toBe("DatepickerField");
 });

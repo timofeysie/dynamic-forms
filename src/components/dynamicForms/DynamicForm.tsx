@@ -48,7 +48,7 @@ const DynamicForm = (props: any) => {
             <DatepickerField
               name={form.name}
               required={form.required}
-              key={form.placeholder}
+              key={form.placeholder+form.name}
               handleChange={(e: React.FormEvent<HTMLInputElement>) => {
                 handleChange(e);
               }}
