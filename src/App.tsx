@@ -13,6 +13,7 @@ const fields = [
   }, {
     name: 'dob',
     required: true,
+    datePlaceholder: new Date(),
     input_type: 'datepicker',
   },
 ];

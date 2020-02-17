@@ -5,17 +5,17 @@ interface IProps {
     name: string;
     required: boolean;
     handleChange: any;
+    datePlaceholder: Date;
 }
 
 const DatepickerField = ({
-  name, required, handleChange,
+  name, required, handleChange, datePlaceholder
 }: IProps) => (
-  <div>
+  <div data-testid="datepickerid">
     <DatePicker
-      selected={new Date()}
+      selected={datePlaceholder}
       name={name}
       required={required}
-      data-testid="datepickerid"
       autoComplete="off"
       onChange={(date: Date) => {
         const newEvent = {
