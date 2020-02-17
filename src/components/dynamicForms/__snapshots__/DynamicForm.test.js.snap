@@ -38,7 +38,7 @@ exports[`matches snapshot 1`] = `
           readOnly={false}
           required={true}
           type="text"
-          value="02/15/2020"
+          value="02/17/2020"
         />
       </div>
     </div>
