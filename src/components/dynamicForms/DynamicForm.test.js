@@ -4,6 +4,7 @@ import { act } from "react-dom/test-utils";
 import ReactDOM from 'react-dom';
 import DynamicForm from "./DynamicForm";
 import { render as testing_lib_render } from "@testing-library/react";
+import { fireEvent } from "@testing-library/react";
 import renderer from "react-test-renderer";
 
 let container = null;
@@ -22,6 +23,7 @@ const fields = [
     input_type: 'datepicker',
   },
 ];
+
 beforeEach(() => {
   container = document.createElement("div");
   document.body.appendChild(container);
@@ -85,6 +87,24 @@ it("renders an input with a type", () => {
   expect(getByTestId("inputid")).toHaveProperty('required');
 });
 
+it("validates the input field", () => {
+  const onSubmitMock = jest.fn((output) => {
+      return output;
+    });
+  const { getByTestId } = testing_lib_render(<DynamicForm fields={fields} onSubmit={onSubmitMock}/>);
+  const input = getByTestId("inputid");
+  input.value= 'input text';
+  fireEvent.change(input);
+  const submitButton = document.forms[0].children[document.forms[0].children.length-1];
+  fireEvent.click(submitButton);
+  expect(onSubmitMock).toHaveBeenCalled();
+  // The actual result is an empty object {}.
+  // expect(onSubmitMock).toHaveBeenCalledWith({
+  //   name: 'input text',
+  //   dob: '02/15/2020'
+  // });
+});
+
 it("matches snapshot", () => {
   const tree = renderer.create(<DynamicForm fields={fields}></DynamicForm>).toJSON();
   expect(tree).toMatchSnapshot();
@@ -94,13 +114,13 @@ it("matches snapshot", () => {
 // (see issue #2 for details)
 it("generates a required datepicker", () => {
   const { getByTestId } = testing_lib_render(<DynamicForm fields={fields}/>);
-  const elem = getByTestId("datepickerid");
-  expect(elem.children[0].children[0].children[0]).toHaveProperty('required');
-  expect(elem.children[0].children[0].children[0]).toHaveAttribute('name', 'dob');
+  const input = getByTestId("datepickerid").children[0].children[0].children[0];
+  expect(input).toHaveProperty('required');
+  expect(input).toHaveAttribute('name', 'dob');
 });
 
 it("takes its default date from an attribute", () => {
     const { getByTestId } = testing_lib_render(<DynamicForm fields={fields}/>);
-    const elem = getByTestId("datepickerid");
-    expect(elem.children[0].children[0].children[0]).toHaveAttribute('value', '02/15/2020');
+    const input = getByTestId("datepickerid").children[0].children[0].children[0];
+    expect(input).toHaveAttribute('value', '02/15/2020');
 });

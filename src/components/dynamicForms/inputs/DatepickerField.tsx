@@ -9,7 +9,7 @@ interface IProps {
 }
 
 const DatepickerField = ({
-  name, required, handleChange, datePlaceholder
+  name, required, handleChange, datePlaceholder,
 }: IProps) => (
   <div data-testid="datepickerid">
     <DatePicker
