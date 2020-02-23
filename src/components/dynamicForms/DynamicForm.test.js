@@ -21,6 +21,8 @@ const fields = [
     required: true,
     datePlaceholder: new Date(1581685200000),
     input_type: 'datepicker',
+    validationPeriod: 18,
+    validationMessage: 'Must be at least 18 years of age',
   },
 ];
 
@@ -88,16 +90,22 @@ it("renders an input with a type", () => {
 });
 
 it("validates the input field", () => {
-  const onSubmitMock = jest.fn((output) => {
-      return output;
-    });
+  const testValues = {
+    name: 'test value',
+    dob: '02/15/2020',
+    onSubmit: jest.fn(),
+  };
+  const onSubmitMock = jest.fn();
   const { getByTestId } = testing_lib_render(<DynamicForm fields={fields} onSubmit={onSubmitMock}/>);
   const input = getByTestId("inputid");
-  input.value= 'input text';
-  fireEvent.change(input);
+  fireEvent.change(input, {
+    target: { name: 'input text' }
+  });
   const submitButton = document.forms[0].children[document.forms[0].children.length-1];
   fireEvent.click(submitButton);
   expect(onSubmitMock).toHaveBeenCalled();
+  expect(onSubmitMock).toHaveBeenCalledTimes(1);
+  // expect(onSubmitMock).toBeCalledWith({name: testValues.name, dob: testValues.dob});
   // The actual result is an empty object {}.
   // expect(onSubmitMock).toHaveBeenCalledWith({
   //   name: 'input text',

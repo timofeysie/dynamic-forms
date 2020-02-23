@@ -42,6 +42,9 @@ exports[`matches snapshot 1`] = `
         />
       </div>
     </div>
+    <div>
+      Must be at least 18 years of age
+    </div>
   </div>
   <input
     className="Submit"

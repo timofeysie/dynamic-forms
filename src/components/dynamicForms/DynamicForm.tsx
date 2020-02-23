@@ -48,11 +48,13 @@ const DynamicForm = (props: any) => {
             <DatepickerField
               name={form.name}
               required={form.required}
-              datePlaceholder={form.datePlaceholder}
-              key={form.placeholder + form.name}
               handleChange={(e: React.FormEvent<HTMLInputElement>) => {
                 handleChange(e);
               }}
+              datePlaceholder={form.datePlaceholder}
+              validationPeriod={18}
+              validationMessage={form.validationMessage}
+              key={form.placeholder + form.name}
             />
           );
         }

@@ -13,8 +13,10 @@ const fields = [
   }, {
     name: 'dob',
     required: true,
-    datePlaceholder: new Date(),
+    datePlaceholder: new Date(new Date().getTime() - (365 * 24 * 60 * 60 * 19000)),
     input_type: 'datepicker',
+    validationPeriod: 18,
+    validationMessage: 'Must be at least 18 years of age',
   },
 ];
 
