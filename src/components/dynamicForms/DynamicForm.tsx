@@ -9,7 +9,6 @@ const DynamicForm = (props: any) => {
   // "Must use destructuring props assignment react/destructuring-assignment"
   // fixing this causes the tests to break.
   const [ fields ] = useState(props.fields);
-  //const [ input, setInput] = useState({});
   const [ input, setInput] = useState({});
   /* eslint-enable */
 
