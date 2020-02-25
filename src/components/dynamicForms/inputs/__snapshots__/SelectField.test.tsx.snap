@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`matches the snapshot 1`] = `
+<div
+  data-testid="selectid"
+>
+  <select
+    name="gender"
+    onChange={[MockFunction]}
+    required={true}
+  >
+    <option
+      value=""
+    >
+      Select
+    </option>
+    <option
+      value={0}
+    />
+    <option
+      value={1}
+    >
+      Female
+    </option>
+  </select>
+</div>
+`;

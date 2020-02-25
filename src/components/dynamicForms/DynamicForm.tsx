@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './style.css';
 import InputTextField from './inputs/InputTextField';
 import DatepickerField from './inputs/DatepickerField';
+import SelectField from './inputs/SelectField';
 
 const DynamicForm = (props: any) => {
   /* eslint-disable */
@@ -57,6 +58,21 @@ const DynamicForm = (props: any) => {
             />
           );
         }
+        if (form.input_type === 'select') {
+          return (
+            <SelectField
+              name={form.name}
+              required={form.required}
+              label={form.label}
+              handleChange={(e: React.FormEvent<HTMLInputElement>) => {
+                handleChange(e);
+              }}
+              selectValues={form.values}
+              key={form.placeholder + form.name}
+            />
+          );
+        }
+
         return <p>No form data.</p>;
       })}
       <input

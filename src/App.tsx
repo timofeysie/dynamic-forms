@@ -17,6 +17,15 @@ const fields = [
     input_type: 'datepicker',
     validationPeriod: 18,
     validationMessage: 'Must be at least 18 years of age',
+  }, {
+    name: 'gender',
+    required: true,
+    label: 'Select gender',
+    input_type: 'select',
+    values: [
+      'Male',
+      'Female',
+    ],
   },
 ];
 
