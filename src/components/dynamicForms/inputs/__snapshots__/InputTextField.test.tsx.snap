@@ -14,18 +14,3 @@ exports[`matches the snapshot 1`] = `
   />
 </div>
 `;
-
-exports[`validates the input field 1`] = `
-<div>
-  <input
-    autoCapitalize="off"
-    data-testid="inputid"
-    name="name"
-    onBlur={[Function]}
-    onChange={[MockFunction]}
-    placeholder="name"
-    required={true}
-    type="text"
-  />
-</div>
-`;
