@@ -10,12 +10,13 @@ npm run build
 
 ## Try out react-cmi5
 
+### [Issue #15](https://github.com/timofeysie/dynamic-forms/issues/15).
 
 What is cmi5?  I've used the xAPI before for e-learning project, and lurk around the spec project.  One issue that came up ended up having a comment about cmi5 which appears to be a stripped down/focused use case of the xAPI.
 
 These are some notes about what it is an how it's used.
 
-You can read more on the AICC [Cmi5 project](https://github.com/AICC/CMI-5_Spec_Current/blob/quartz/cmi5_spec.md#overview).  What is AICC?  The title of their profile says only *The cmi5 Project xAPI Profile for LMS systems*
+You can read more on the AICC [Cmi5 project](https://github.com/AICC/CMI-5_Spec_Current/blob/quartz/cmi5_spec.md#overview).  What is AICC?  The title of their profile says only *The cmi5 Project xAPI Profile for LMS systems*.  That isn't exactly an acronym for AICC.
 
 The [Summary of cmi5 in Action](https://xapi.com/cmi5-technical-101/?utm_source=google&utm_medium=natural_search) provides a good checklist for what we would want a client to implement:
 
@@ -89,6 +90,82 @@ export default class ExampleQuestion extends Component<IExampleQuestionProps, IE
 Of course, it's a good idea to read to code and add the correct types.  For now, just getting the example to work is enough.  Just is just to find out what Cmi5 is all about.
 
 There is a basic question [in this example](https://github.com/beatthat/react-cmi5/blob/master/example/single-question-assignable-unity/src/ExampleQuestion.js) on the beat that react-cmi5 repo.  This gives us a starting point for playing around with Cmi5.
+
+
+### Fixing the linting errors
+
+As soon as the basic form was in and working, it was time to fix the red screen in file.  The main issues were double quotes which and line breaks from working on a mac I suppose.  But who knows, because React uses double quotes.  Isn't that what airbnb uses?  To get an overview of all the issues, we can do some quick fixes recommended by VSCode, which look like this:
+
+```bash
+/* eslint-disable linebreak-style */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable quotes */
+```
+
+This might be a quick fix for this file, but as soon as you open another file, for example from the pre-existing dynamic forms component, you get red screen again.  However, there were some good points raised by suppressing those for a bit and taking care of real code issues shown next.
+
+Then there are only a few more more code specific errors.  Such as:
+
+```js
+const score = this.state.score; // score was set when user chose a radio-button answer
+```
+
+The quick fix for this is:
+
+```js
+const { score } = this.state
+```
+
+There are a few more of these without any quick fix.  There is a [helpful link](https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/destructuring-assignment.md) however.
+
+Next, the template has some linting errors:
+
+```txt
+form label must be associated with a control.eslint(jsx-a11y/label-has-associated-control)
+```
+
+That's actually cool to point out as it's an accessability thing (a11y).  But, actually, we already have a label.  The solution was to put the label *around* the input.
+
+```html
+<label htmlFor="r3">
+  <span>2</span>
+  <input
+    type="radio"
+    id="r3"
+    className="form-control"
+    name="answer"
+    value="1"
+    onChange={(e) => onSelectAnswer(e)}
+  />
+</label>
+```
+
+I created a span for the text there, otherwise the number would just be hanging out somewhere in between.  The extra useless markup looks better structurally.  Just my view.
+
+Next error, on the this.state:
+
+```txt
+Use callback in setState when referencing the previous state.eslintreact/no-access-state-in-setstate
+```
+
+```tsx
+this.setState({
+  ...this.state,
+  score: e.target.value,
+});
+```
+
+The last error:
+
+```html
+<button onClick={onSubmit}>submit</button>
+```
+
+```txt
+Missing an explicit type attribute for buttoneslintreact/button-has-type
+```
+
+It needs a form around all the divs, as well as a type="submit".0
 
 ## The Lilianfelds Form
 
