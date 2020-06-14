@@ -91,8 +91,7 @@ Of course, it's a good idea to read to code and add the correct types.  For now,
 
 There is a basic question [in this example](https://github.com/beatthat/react-cmi5/blob/master/example/single-question-assignable-unity/src/ExampleQuestion.js) on the beat that react-cmi5 repo.  This gives us a starting point for playing around with Cmi5.
 
-
-### Fixing the linting errors
+### Fixing the linting errors with quick fixes
 
 As soon as the basic form was in and working, it was time to fix the red screen in file.  The main issues were double quotes which and line breaks from working on a mac I suppose.  But who knows, because React uses double quotes.  Isn't that what airbnb uses?  To get an overview of all the issues, we can do some quick fixes recommended by VSCode, which look like this:
 
@@ -166,6 +165,78 @@ Missing an explicit type attribute for buttoneslintreact/button-has-type
 ```
 
 It needs a form around all the divs, as well as a type="submit".0
+
+### Fixing linting errors properly
+
+The [docs say for ESLint and airbnb say](npmjs.com/package/eslint-config-airbnb) *default export contains all of our ESLint rules, including ECMAScript 6+ and React. It requires eslint, eslint-plugin-import, eslint-plugin-react, eslint-plugin-react-hooks, and eslint-plugin-jsx-a11y*.
+
+That's some new stuff installed by this command:
+
+```bash
+npx install-peerdeps --dev eslint-config-airbnb
+```
+
+However, the App.tsx file is still plagued by the "Strings must use singlequote" errors.
+
+Nov 16, 2013:  This a preference. The important thing, as @jaseemabid points out is consistency. At Airbnb we use '' which is what is reflected in the style guide.
+
+So I consented and converted the file to single quotes.  But I was using double quotes to be one with the React world.  It was a problem at first as I was so used to writing single quotes with Angular, that I kept forgetting to do it, and also got mixed up on the job a few times.  Actually being more aware of the code in detail is a good thing overall.
+
+However, to fix some issues (line length), I wanted to run Prettier on the file.  This then fixed the issue I wanted but also reverted all the quotes to doubles again.  Great.  Disable Prettier, or disable Eslints rule?  In this case, also, ESlint then complains: *There should be no line break before or after '='.*  Can't have it either way.
+
+Some issues with the DynamicForm.test.tsx file however are a problem.
+
+```txt
+'import' is only available in ES6 (use 'esversion: 6'). (W119)jshint(W119)
+Peek Problem (Alt+F8)
+No quick fixes available
+```
+
+What?  It's a .js file, so is that an issue?  I might point out that this project is only about 5 months old.  How can things change so much?  Anyhow, an addition of a.jshintrc file solves the issue with this contents:
+
+```json
+{
+    "esversion": 6
+}
+```
+
+Rename the file from .js to .jsx then, we get this:
+
+```txt
+JSX not allowed in files with extension '.jsx'eslintreact/jsx-filename-extension
+```
+
+What?  Anyhow, .tsx works.  That's what should be used anyhow.
+
+Some more sticky issues:
+
+Variable 'container' implicitly has an 'any' type.ts(7005)
+
+Change this:
+
+```js
+let container = null;
+```
+
+for this:
+
+```js
+let container: Element | null = null;
+```
+
+Next, another TypeScript issue:
+
+```js
+expect(element1.children[0].children[0].type).toBe('text');
+```
+
+Causes this error:
+
+```txt
+Property 'type' does not exist on type 'Element'.ts(2339)
+```
+
+All up it took about an hour to fix the linting in a single file.
 
 ## The Lilianfelds Form
 

@@ -24,7 +24,8 @@ export default class ExampleQuestion extends Component<
     // eslint-disable-next-line no-unused-vars
     const { passed, failed } = this.props;
 
-    const onSubmit = () => {
+    const onSubmit = (e: any) => {
+      e.preventDefault();
       const { score } = this.state; // score was set when user chose a radio-button answer
       if (score > 0) {
         this.props.passed(score);
@@ -101,7 +102,6 @@ export default class ExampleQuestion extends Component<
               </label>
             </div>
             <div className="form-group">
-              // eslint-disable-next-line react/button-has-type
               <button onClick={onSubmit} type="submit">
                 submit
               </button>
