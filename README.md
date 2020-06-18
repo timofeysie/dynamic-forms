@@ -10,7 +10,7 @@ npm run build
 
 ## Try out react-cmi5
 
-### [Issue #15](https://github.com/timofeysie/dynamic-forms/issues/15).
+### [Issue #15](https://github.com/timofeysie/dynamic-forms/issues/15)
 
 What is cmi5?  I've used the xAPI before for e-learning project, and lurk around the spec project.  One issue that came up ended up having a comment about cmi5 which appears to be a stripped down/focused use case of the xAPI.
 
@@ -236,11 +236,132 @@ Causes this error:
 Property 'type' does not exist on type 'Element'.ts(2339)
 ```
 
-All up it took about an hour to fix the linting in a single file.
+All up it took about an hour to fix the linting in a single file.  I shouldn't say *fix* either.  When this project was set up, it was for a technical test, and I spent a lot of time trying to impress by setting up linting with tbe strictest airbnb stylesheet.
+
+### the Golf Example
+
+To try xAPI in practice an LRS is setup.  After looking at a few options, a free account [at lrs.io](https://lrs.io/ui/lrs/sample-lrs-onlunez/) is using 4 out of 100 megabytes.
+
+An example of using xAPI from [the official docs](https://xapi.com/try-developer/?utm_source=google&utm_medium=natural_search) has challenge 3, [the golf prototype](https://github.com/RusticiSoftware/TinCan_Prototypes/blob/master/GolfExample_TCAPI/index.html#L49-108) which is an example of a traditional style e-learning course that apparently they’ve been using for years with SCORM.
+
+The file has Jan 8, 2016 as it's last date, but it has 2010 written all over it.  Think what you want about legacy code, you have to admit there's a lot of it out there.  Everyone is coming from a different background, so just because it's a single file that uses var, a year or more after let and const started being used so I'm guessing ES5 is what it's written in.
+
+Notice that this is a "Tin Can" project, which is actually before it was even called xAPI.  
+
+How old actually is it?  Brian J. Miller, the man, committed some code on Sep 4, 2012
+A draft prototype by bscSCORM committed on Sep 13, 2011.
+
+Man, I called it.  OK, I was one year off.  I have to say that, no one else seems to have blogged about using this code as far as I can see with a quick google.
+
+Here is [something recent](https://www.valamis.com/hub/xapi) where it says xApi is the current standard.
+
+#### The highlights
+
+Doing a deep dive into the index.html file on the repo.  Let's break it down into the highlights.
+
+A few script tags.
+
+- <script src="scripts/TinCanJS/build/tincan-min.js"
+- <script src="scripts/common.js"
+
+Some content definition.
+
+```js
+var pageArray = [ ... ],
+  processedUnload = false,
+  reachedEnd = false,
+  maxPageReached = 0,
+  tincan = new TinCan ({
+    url: window.location.href,
+    activity: GolfExample.CourseActivity
+});
+var BookmarkingTracking = function(){ };
+BookmarkingTracking.prototype = {  };
+var bookmarkingData = new BookmarkingTracking();
+```
+
+Some functions for sizing the iFrame
+
+```js
+function setIframeHeight(id, navWidth) { }
+function getWindowHeight() { }
+function SetupIFrame(){ }
+```
+
+A navigation functions
+
+```js
+function doStart(){ }
+function goToPage(){ }
+function doPrevious(){ }
+function doNext(){ }
+function doExit(){ }
+function FormatChoiceResponse(value){ }
+```
+
+Start it up
+
+```js
+<body onload="doStart(false);">
+```
+
+Inline styles and a groovy ```<iframe></iframe>```.  Can it get any better (just kidding).
+
+If we want to use this in a modern React setting, well linted and using hooks and all that, where does one start?
+
+#### Let's look at the functions in the BookmarkingTracking.prototype
+
+```js
+BookmarkingTracking.prototype = {
+  initFromBookmark: function(bookmark){ },
+  reset: function(){  },
+  save: function (callback){
+      var bookmarking = {  };
+      tincan.setState("bookmarking-data", bookmarking, { });
+  },
+  get: function(){ },
+  setStartDuration: function(duration){ },
+  setPage: function(page){ },
+  getPage: function(){ },
+  incrementPage: function (){ },
+  decrementPage: function (){ },
+  setCompletion: function(completion){ },
+  getCompletion: function(completion){ },
+  getAttemptDuration: function (){ },
+  getSessionDuration: function (){ }
+};
+```
+
+This is all the index page. The page array contains the following sections:
+
+```html
+"Playing/Playing.html",
+"Playing/Par.html",
+"Playing/Scoring.html",
+"Playing/OtherScoring.html",
+"Playing/RulesOfGolf.html",
+"Etiquette/Course.html",
+"Etiquette/Distracting.html",
+"Etiquette/Play.html",
+"Handicapping/Overview.html",
+"Handicapping/CalculatingHandicap.html",
+"Handicapping/CalculatingScore.html",
+"Handicapping/Example.html",
+"HavingFun/HowToHaveFun.html",
+"HavingFun/MakeFriends.html",
+"assessmenttemplate.html"
+```
+
+So along with the index, there are these sections:
+
+- Playing
+- Etiquette
+- Handicapping
+- HavingFun
+
+I thought this was going to be an easy exercise, but it's going to require a bit of thought before getting into the React code.
 
 ## The Lilianfelds Form
-
-This approach is a metacognitive questionnaire to develops skills involved in critical thinking.
 
 These are the skills involved in recognizing when these cognitive skills should be used, knowing how to use them, and why to use them.
 
