@@ -56,6 +56,83 @@ password: "secret, password or pass"
 
 So, we're just going to add our LRS password to the front end code?
 
+There is a [management link](https://lrs.io/ui/lrs/sample-lrs-onlunez/keys/create/) on the LRS chosen with a create new access key option that has the following defaults:
+
+```txt
+KEY NAME access-key
+READ XAPI PERMISSION: check
+WRITE XAPI PERMISSION: check
+LIMITED READ
+ADVANCED QUERIES
+JWT ACCESS
+ENABLED: check
+USERNAME: wupver
+PASSWORD: nuwimu
+```
+
+Looking at the result, it's the same as the Sample Credentials provided when the account was created:
+
+```txt
+Username: username
+Password: password
+```
+
+The docs say: *Keys can also be used to sign a JSON Web Token (JWT). If your application knows the secret password from a key with the Sign JWT permission enabled, it can create a one time use token to be provided to the xAPI client.*
+
+If that's the case, and JWT ACCESS is not ticked, then what are they good for?  What is our endpoint?  That's what we need for the exercise.  On the analytics page we see this:
+
+```txt
+https://sample-lrs-onlunez.lrs.io/xapi/
+```
+
+That's worth a shot.
+
+The next part is how to get the library to work in TypeScript.  This is the usual process of finding out that not everyone lives in the current era of front end development.
+
+```js
+import TinCan from 'tincanjs';
+```
+
+```txt
+Could not find a declaration file for module 'tincanjs'. 'c:/Users/timof/repos/timofeysie/dynamic-forms/node_modules/tincanjs/build/tincan-node.js' implicitly has an 'any' type.
+  Try `npm install @types/tincanjs` if it exists or add a new declaration (.d.ts) file containing `declare module 'tincanjs';`ts(7016)
+```
+
+```bash
+>npm install @types/tincanjs
+npm ERR! code E404
+npm ERR! 404 Not Found - GET https://registry.npmjs.org/@types%2ftincanjs - Not found
+npm ERR! 404  '@types/tincanjs@latest' is not in the npm registry.
+```
+
+We could create a .d.ts file as [described here](https://stackoverflow.com/questions/41292559/could-not-find-a-declaration-file-for-module-module-name-path-to-module-nam), but since this is just a test, the following will work to get a move on:
+
+```js
+// @ts-ignore
+```
+
+Then, creating the statement as shown in the example works fine.  Refresh the analytics page of the LRS and there are now 2142 Statements, one more than before the refresh.
+
+The analytics page has the following graphs:
+
+- Activity Over Time
+- Actors With The Most Events
+- Recently Active Objects
+- Weekly Traffic
+- Sessions
+- Actor Behavior
+- Activity Over Time Breakdown
+- Most Active Parent Contexts
+- Most Active Grouping Contexts
+- High Scoring Objects
+- Low Scoring Objects
+- Verb Type
+- Activity By Authority
+
+Pretty nice.  Next is the ["prototypes"](https://xapi.com/prototypes/) exercise.
+
+Another example is the [location tour demo](https://xapi.com/wp-content/assets/ClientPrototypes/Locator_TCAPI/index.html?endpoint=https%3A%2F%2Fcloud.scorm.com%2FScormEngineInterface%2FTCAPI%2Fpublic%2F&auth=Basic%20VGVzdFVzZXI6cGFzc3dvcmQ%3D&actor=%7B%22mbox%22%3A%22mailto%3Atest%40beta.projecttincan.com%22%2C%22name%22%3A%22Test%20User%22%2C%22objectType%22%3A%22Agent%22%7D&registration=e168d6a3-46b2-4233-82e7-66b73a179727).  Pretty cool idea, but the example code doesn't work.  No doubt google is not defined.
+
 ## Try out react-cmi5
 
 ### [Issue #15](https://github.com/timofeysie/dynamic-forms/issues/15)
@@ -477,7 +554,25 @@ So information can be ordered/scored on the following criteria:
 2. knowing how to use them
 3. why to use them
 
+
+
 Using an LRS (Learning Record Store) might be a solution to this.  Using the e-learning reporting approach, we should get what we want from the above.
+
+The lrs.io demo account used to work with the xAPI code has an analytics page has the following graphs:
+
+- Activity Over Time
+- Actors With The Most Events
+- Recently Active Objects
+- Weekly Traffic
+- Sessions
+- Actor Behavior
+- Activity Over Time Breakdown
+- Most Active Parent Contexts
+- Most Active Grouping Contexts
+- High Scoring Objects
+- Low Scoring Objects
+- Verb Type
+- Activity By Authority
 
 ## Dynamic Forms Challenge
 

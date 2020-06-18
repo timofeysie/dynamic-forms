@@ -2,6 +2,8 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable linebreak-style */
 import React from 'react';
+// @ts-ignore
+import TinCan from 'tincanjs';
 import './App.css';
 // @ts-ignore
 import Cmi5AU from 'react-cmi5';
@@ -42,6 +44,33 @@ const App = () => {
   /* It's temporary, so when no longer needed remove this and the log. */
   const onSubmit = (output: React.FormEvent<HTMLInputElement>) => {
     console.log("output", output);
+    const tincan = new TinCan({
+      recordStores: [
+        {
+          endpoint: "https://sample-lrs-onlunez.lrs.io/xapi/",
+          username: "username",
+          password: "password",
+          allowFail: false,
+        },
+      ],
+    });
+    tincan.sendStatement(
+      {
+        actor: {
+          mbox: "mailto:timofeyc@hotmail.com",
+        },
+        verb: {
+          id: "http://adlnet.gov/expapi/verbs/attempted",
+        },
+        target: {
+          id: "https://experienceapi.com/activities/sending-my-first-statement",
+        },
+      },
+      function (err: any, result: any) {
+        //Handle any errors here. This code just outputs the result to the page.
+        console.log(err, result)
+      }
+    );
   };
 
   return (
