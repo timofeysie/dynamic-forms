@@ -1,5 +1,14 @@
 # Dynamic Forms
 
+## Table of contents
+
+- [How to send an xAPI statement](#how-to-send-an-xAPI-statement)
+- [Try out react-cmi5](#try-out-react-cmi5)
+- [The xAPI Golf Example](#the-xAPI-Golf-Example)
+- [The Lilianfelds Form](#the-Lilianfelds-Form)
+- [Dynamic Forms Challenge](#dynamic-Forms-Challenge)
+- [Original readme](#original-readme)
+
 ## Workflow
 
 ```shell
@@ -7,6 +16,45 @@ npm start
 npm test
 npm run build
 ```
+
+## How to send an xAPI statement
+
+Looking at the [first exercise of the official xAPI JavaScript docs](https://xapi.com/try-developer/?utm_source=google&utm_medium=natural_search), there are four steps to get to sending a statement.
+
+1. Get a library
+2. Install the library
+3. Configure the LRS
+4. Send the statement
+
+For this exercise, we will send the inputs of a dynamic form submission to our LRS.  In the in the previous section, React-cmi5, a wrapper component for an xapi/cmi5 AU was installed.  It's not the same thing as the lib mentioned here.
+
+This is shown in the code snippet for #2:
+
+```html
+<script src="tincan.js"></script>
+```
+
+We would of course like to use npm to put the lib in the node_modules, as is standard.  So our options are:
+
+- [tincanjs](https://www.npmjs.com/package/tincanjs), A JavaScript library for implementing the Experience API (Tin Can API).  Published 4 years ago.
+- [tincan](https://www.npmjs.com/package/tincan), tincan-nodejs
+A thin wrapper for reading and writing data using the tincan.me API using Node.JS. Published 7 years ago.
+
+We not using NodeJS, so the first one may be appropriate.
+
+```bash
+npm install tincanjs
+```
+
+### 3. Configure the LRS
+
+```js
+endpoint: "https://lrs.example.com/tin-can-endpoint/",
+username: "key, login or username",
+password: "secret, password or pass"
+```
+
+So, we're just going to add our LRS password to the front end code?
 
 ## Try out react-cmi5
 
@@ -238,7 +286,7 @@ Property 'type' does not exist on type 'Element'.ts(2339)
 
 All up it took about an hour to fix the linting in a single file.  I shouldn't say *fix* either.  When this project was set up, it was for a technical test, and I spent a lot of time trying to impress by setting up linting with tbe strictest airbnb stylesheet.
 
-### the Golf Example
+## The xAPI Golf Example
 
 To try xAPI in practice an LRS is setup.  After looking at a few options, a free account [at lrs.io](https://lrs.io/ui/lrs/sample-lrs-onlunez/) is using 4 out of 100 megabytes.
 
@@ -376,8 +424,8 @@ questions when given a problem before they solve it.
 
 There also needs to be information about the document helpful in organizing the eventual list of form submissions.
 
-* date
-* label
+- date
+- label
 
 The initial content for the form is as follows.
 
@@ -423,11 +471,360 @@ range: 1 2 3 4 5
 
 More research needs to be done in how to sort and summarize the answers to these questions.  The brief states that the method builds the skills involved in recognizing when these cognitive skills should be used, knowing how to use them, and why to use them.
 
-So information can be ordered/scored on the following criteria0:
+So information can be ordered/scored on the following criteria:
 
 1. when these cognitive skills should be used
 2. knowing how to use them
 3. why to use them
+
+Using an LRS (Learning Record Store) might be a solution to this.  Using the e-learning reporting approach, we should get what we want from the above.
+
+## Dynamic Forms Challenge
+
+The challenge was to create a React component that uses a JSON schema that dynamically creates a form and results in JSON outputted on submit.
+
+It is to be a release ready, original app that takes between 2 to 3 hours to complete.
+It was noted that the size of the task is ambitious and I wasn't expected to finish but to demonstrate how I would approach the problem.
+
+The original part is questionable.  I used [this article](https://medium.com/curofy-engineering/dynamic-forms-with-react-js-d25d7c4f53d1) as a guide, but spent time setting up linting and a decent build process, converting the code to use the latest in React hooks, and covering everything with decent unit tests.
+
+I started by implementing a single first/last name input and date of birth (validated older than 18) field that satisfy those requirements.
+
+Due to spending a large amount of the allotted time on the unit testing the submit function, I was not able to implement some of the other fields.  I thought it was better to have well a well functioning and tested base for further development that a shallow implementation without any tests.  
+
+I have detailed the unfinished work in [this issue](https://github.com/timofeysie/dynamic-forms/issues/5).
+
+After proceeding with the interview process which meant three more interviews with the team, CTO and managers including a whiteboard test, I got the green light from all parties, and the Coronaviarus pandemic reared it's ugly head, so they then put a hiring freeze in place at the same time I was offered a role somewhere else.
+
+After this I have occasionally implemented a bit more of the challenge by adding other component form types and tests.  Then I made a data model for the Lilianfels critical thinking checklist form and considered using this project as a test bed for xAPI code.
+
+Here are all the notes from the initial challenge in reverse order.
+
+### Testing the submit button
+
+```js
+const handleSubmit = (event) => {
+  event.preventDefault();
+  props.onSubmit(input);
+};
+```
+
+This is the way the onsubmit bubbles up it's result:
+In the DynamicForms.tsx:
+
+```js
+  const [ input, setInput] = useState({});
+  /* eslint-enable */
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    props.onSubmit(input);
+  };
+```
+
+The result in the App.tsx file:
+
+```js
+  const onSubmit = (output: React.FormEvent<HTMLInputElement>) => {
+    console.log('output',output);
+  };
+```
+
+Trying to emulate that a bit in the test:
+
+```js
+  const onSubmitMock = jest.fn((output) => {
+      return output;
+    });
+```
+
+This doesn't work.  The result is still an empty object.  Maybe we have to mock/spy on the the useState input variable?
+
+### Adding snapshot testing
+
+During the week for February 3rd to 7th, added:
+
+```json
+    "react-test-renderer": "^16.12.0",
+    "react-testing-library": "^8.0.1"
+```
+
+And snapshot testing.
+
+Added snapshot testing and converted the form to a functional component
+
+### TODO
+
+- Make the DynamicForm component a function.
+[The source article](https://medium.com/curofy-engineering/dynamic-forms-with-react-js-d25d7c4f53d1) was written in Dec 10, 2018, so this takes some work.
+- Implement the rest of the input types in the demo.
+Reverse engineer the data from the test example in our dynamic form schema.
+- remove generic 'any' types
+- format the date picker output
+- Warning: Each child in a list should have a unique "key" prop.
+- Add gender, contact and guardian input types
+- Test the submit button #6
+
+Next, test changing the date (something like this):
+
+```js
+    const input = getByLabelText('Change text');
+    input.value= 'input text';
+    fireEvent.change(input);
+    fireEvent.click(getByText('Save'));
+    console.log('saved', getByTestId('saved').innerHTML);
+    expect(getByTestId('saved')).toHaveTextContent('input text')
+```
+
+```js
+const input = getByTestId("datepickerid").children[0].children[0].children[0];
+```
+
+```bash
+console.error node_modules/jsdom/lib/jsdom/virtual-console.js:29
+      Error: Uncaught [TypeError: props.onSubmit is not a function]
+          at reportException (C:\Users\timof\repos\timofeysie\dynamic-forms\node_modules\jsdom\lib\jsdom\living\helpers\runtime-script-errors.js:66:24)
+```
+
+### Validation
+
+Do we need a form element?
+
+https://codeburst.io/how-to-use-html5-form-validations-with-react-4052eda9a1d4
+Using HTML Constraint API validation 
+No regex here so wont solve the user name in one field restraint.
+
+https://stackoverflow.com/questions/41296668/reactjs-form-input-validation
+Use JS to do the validation, provides good flexibility.
+Do we validate in the input components or the dynamic form component?  Or both?
+
+Two words: /(\w.+\s).+/
+
+### The date picker
+
+Using react-datepicker - npm 500,000 weekly downloads.
+
+```txt
+TypeError: Cannot read property 'name' of undefined
+```
+
+The event is this:
+
+event Thu Feb 13 2020 13:02:57 GMT+1100 (Australian Eastern Daylight Time)
+
+Have to convert that to a un usable even with the date picker component I suppose.
+
+### Linting
+
+On a Saturday/Sunday stretch, did some work on the linting.
+
+Using a lot of /*eslint-disable*/ to get the linting done while the transition from class to functional component gets underway.
+
+Removed the old index in the components directory and used the new functional DynamicForm component and got the tests to pass and ran into the submit form to parent issue when Darragh arrived and I had to stop working and start drinking.
+
+Still trying to get the submit form action passed out of the dynamic form component into the calling parent, ie: App.tsx.
+
+```js
+const DynamicForm2 = (props: any) => {
+  const [onSubmit] = useState(props.onSubmit);
+  return (
+    <form onSubmit={() => {onSubmit}}>
+```
+
+The last line there causes this error:
+
+```txt
+Failed to compile.
+./src/components/dynamicForms/DynamicForm.tsx
+  Line 15:28:  Expected an assignment or function call and instead saw an expression  @typescript-eslint/no-unused-expressions
+```
+
+Search for the keywords to learn more about each error.
+
+Looking at this example:
+https://rangle.io/blog/simplifying-controlled-inputs-with-hooks/
+
+We can fix the on submit issue in the Dynamic Form, but still have problems getting that to the parent.
+
+```js
+const DynamicForm = (props: any) => {
+  const [onSubmit] = useState(props.onSubmit);
+  const [fields, setFields] = useState(props.fields);
+  const [inputState, setInputState] = useState(props);
+  const handleSubmit = (evt: any) => {
+    evt.preventDefault();
+    onSubmit(inputState);
+  }
+  const handleChange = (event: any) => {
+    setInputState({
+      [event.currentTarget.name]: event.currentTarget.value,
+    });
+  };
+  return (
+    <form onSubmit={handleSubmit}>
+```
+
+Then we get:  ```TypeError: onSubmit is not a function```
+
+The golden ticket that lets us move forward is:
+Instead of this:
+
+```js
+const [onSubmit] = useState(props.onSubmit);
+```
+
+This:
+
+```js
+props.onSubmit(inputState);
+```
+
+Next, adding a new text area component, realized it was not needed.  Looking at the validation required however, a date field is the next thing we should worry about.  As well as validation for both:
+
+```txt
+name
+    text based
+    should enforce the need for a first and last name (separated by a space)
+date of birth
+    date based
+    required, should be older than 18
+```
+
+The output will look like this:
+
+```json
+{
+    name: "John Foo",
+    dob: "1990-01-01",
+```
+
+So we need to add a validation field and micro-syntax to allow the input components to do it.
+
+First, the text area does not show up in the submit.
+
+```js
+const [fields] = useState(props.fields);
+  const [...inputFields] = useState(props);
+```
+
+This is the way it's shown in the article (which uses a class):
+
+```js
+ const { fields, ...inputFields } = this.state;
+```
+
+This breaks the app:
+
+```js
+const [fields, inputFields] = useState(props);
+```
+
+The key is how the state is updated:
+
+```js
+[event.currentTarget.name]: event.currentTarget.value,
+```
+
+[Source](https://medium.com/curofy-engineering/dynamic-forms-with-react-js-d25d7c4f53d1)
+
+The article says: *In the Form component, _handleChange will trigger onChange from the child component and will store the state with respect to the ‘name: value’ of the element.*
+
+Not sure about that since we've changed so much.  The last input edited is the only one that shows up on submit.
+
+The state doesn't need to be connected to the fields that are passed in.  The form can keep it's own state and then on submit, create the final json that will be emitted.  So we should have all we need now to do that.  Then get on with validating the name field and then creating the date component.
+
+The answer was simple, but took some strange error making to point me in the right direction.
+
+```js
+const [ input, setInput] = useState({});
+...
+  const handleChange = (event: React.FormEvent<HTMLInputElement>): void => {
+    setInput({
+      ...input, 
+        [event.currentTarget.name]: event.currentTarget.value
+    });
+  };
+```
+
+Then our output in the parent App.tsx file is: 
+
+```json
+{email: "asdf", some-name: "dsa"}
+```
+
+There we go.  Next up, convert that text field to a date picker, then change the first input to name with two part validation and we're on our way.
+DO some TDD by creating the test and then making it pass.
+
+```js
+interface IProps {
+  fields: any
+}
+const DynamicForms = ({
+  fields
+}: IProps) => (
+```
+
+### The details of our frontend challenge
+
+#### Purpose:
+
+We want you to create a React component that can render different forms, e.g. sign up, mailing list registration, feedback form. Given the proposed variety to support, we want to create a single component that can be easily adapted.
+
+#### Details:
+
+Create a React component that can accept a JSON-based form definition via a prop and produce a form that, in this case, can be used to collect a person’s details. The form should include the following fields:
+
+```txt
+name
+    text based
+    should enforce the need for a first and last name (separated by a space)
+date of birth
+    date based
+    required, should be older than 18
+gender
+    options based (male/female)
+    optional
+contact number
+    text based
+    optional
+    allow for multiple values (e.g. mobile, home, etc)
+require guardian consent
+    checkbox
+    optional
+guardian details (name, contact)
+    text based
+    required/applicable if consent checkbox is ticked
+```
+
+The form should provide the resulting form data on successful submission. A valid output for the form might be the following:
+
+```js
+{
+    name: "John Foo",
+    dob: "1990-01-01",
+    gender: 1,
+    contact: [{
+        type: "mobile",
+        value: "0400123123"
+    },{
+        type: "home",
+        value: "610000000"
+    }],
+    guardian: {
+        name: "Jane Foo",
+        contact: "0400123123"
+    }
+}
+```
+
+The form should be generated at runtime based on a JSON schema that you devise. Changing the schema should alter what fields are shown and what data is returned on submit.
+
+Please ensure the code is original - please don't not use an existing form library.
+
+We expect you to spend 1 - 2 hours on the task, although you’re welcome to spend longer if interested. The size of the task is ambitious so we don't expect you to finish. We are looking at how you approach the problem.
+
+Please treat the task as if you were producing code ultimately for release. Please use Git and make a commit at the start (i.e. blank repo) and after an hour. In your closing commit please mention the total amount of time you spend on the task.
+
+If you have any questions about the problem, please feel free to ask me. Once finished, please send the repo through to me.
 
 ## Original readme
 
