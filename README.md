@@ -159,18 +159,87 @@ The [Summary of cmi5 in Action](https://xapi.com/cmi5-technical-101/?utm_source=
 12. LMS may determine that a Session has been concluded without a “Terminated” statement having been recorded, at which point it records an “Abandoned” Statement
 Multiple sessions in various launch modes may occur for the same Registration
 
-Sone definitions
+#### Sone definitions
 
 - Learning Management Systems (LMS)
 - Assignable Units (AU)
 
-The launchable piece of content that includes the concepts of completion, pass/fail, score, and duration. Each course requires at least one AU. AU metadata is captured in the Course structure file, but content assets may be included in a package or hosted remotely.
+The launch-able piece of content that includes the concepts of completion, pass/fail, score, and duration. Each course requires at least one AU. AU metadata is captured in the Course structure file, but content assets may be included in a package or hosted remotely.
 
 ### React Cmi5
 
 React wrapper component for an xapi/cmi5 assignable unit [from this repo](https://github.com/beatthat/react-cmi5/blob/master/README.md).
 
-EsLint is now causing problems in this project.  The VSCode file structure window is all read with comments like this:
+After spending too much time on linting detailed in the [Problems with linting](#Problems with linting) section below, the form works.  It is a simple multiple choice form which does nothing yet.
+
+The example question itself doesn't involve any cmi5, but is wrapped in a cmi5 tag.
+
+```html
+<Cmi5AU>
+  <ExampleQuestion />
+</Cmi5AU>
+```
+
+In the example question component, there are some props and an onSubmit function:
+
+```js
+    // props includes special actions for passed({score:1.0}) and failed({score: 0.0 })
+    // These are wrappers for cmi.passed and cmi.failed
+    // that make sure cmi has initialized before score is actually sent
+    const {passed, failed} = this.props
+
+    const onSubmit = () => {
+      const score = this.state.score // score was set when user chose a radio-button answer
+      if(score > 0) {
+        this.props.passed(score)
+      }
+      else {
+        this.props.failed(score)
+      }
+      this.props.terminate() // MUST call terminate to end the session
+    }
+```
+
+It's inside a class file, which is something that will have to change.  One mandate for this project is that it avoids classes and uses the latest in React hooks and functional programming.  But this can wait for some refactoring after the example is working.
+
+On it's own, the example is basically pseudo code.  There is no form yet, just:
+
+```html
+<div>
+  question form here
+  <button onClick={onSubmit}>submit</button>
+</div>
+```
+
+The [example question](https://github.com/beatthat/react-cmi5/blob/master/example/single-question-assignable-unity/src/ExampleQuestion.js) markup provides the basic radio button multiple choice question.
+
+The notes point out that as a child of Cmi5AssignableUnit the important piece to note is the use of the injected action properties 'passed' and 'failed', which the question can use to submit results.  Now that we have a LRS setup to send statements from the result of the initial dynamic form, the cmi5 form should do the same.  But there is no code showing what happens with the submit from the example question.
+
+After a few more clicks up and down, it appears [the other example](https://github.com/beatthat/react-cmi5/tree/master/example/assignable-unity-sends-multiple-scores-in-result) in the source file has the answer for that.
+
+*An example CMI5 assignable unit that connects to an LMS (the XAPI backend of an LMS) and reads/writes an xapi statement.*
+
+It's work quoting more of these notes:
+
+#### To satisfy the cmi5 protocol, you will need the following params
+
+- `fetch`: a url to retrieve an access token for your XAPI server
+- `endpoint`: the root endpoint for your XAPI server
+- `activityId`: IRI/id for the XAPI object this assignable unit represents (callbacks to 'passed', 'failed' etc. will use this activity id)
+- `registration`: basically an XAPI session id
+- `actor`: account for which results will be applied (passed as a json XAPI actor object)
+
+Details for the above are here in the cmi5 spec [here](https://github.com/AICC/CMI-5_Spec_Current/blob/quartz/cmi5_spec.md#81-launch-method)
+
+For reference, the below is what an example url might look like
+
+```txt
+http://localhost:3000/?fetch=http://qa-pal.ict.usc.edu/api/1.0/cmi5/accesstoken2basictoken?access_token=41c847e0-fccd-11e8-8b7f-cf001aed3365&endpoint=http://qa-pal.ict.usc.edu/api/1.0/cmi5/&activityId=http://pal.ict.usc.edu/lessons/cmi5-ex1&registration=957f56b7-1d34-4b01-9408-3ffeb2053b28&actor=%7B%22objectType%22:%20%22Agent%22,%22name%22:%20%22taflearner1%22,%22account%22:%20%7B%22homePage%22:%20%22http://pal.ict.usc.edu/xapi/users%22,%22name%22:%20%225c0eec7993c7cf001aed3365%22%7D%7D
+```
+
+### Problems with linting
+
+EsLint is now causing problems in this project.  The VSCode file structure window is all red with comments like this:
 
 ```txt
 module "c:/Users/timof/repos/timofeysie/dynamic-forms/node_modules/@types/react/index"
@@ -214,7 +283,7 @@ export default class ExampleQuestion extends Component<IExampleQuestionProps, IE
 
 Of course, it's a good idea to read to code and add the correct types.  For now, just getting the example to work is enough.  Just is just to find out what Cmi5 is all about.
 
-There is a basic question [in this example](https://github.com/beatthat/react-cmi5/blob/master/example/single-question-assignable-unity/src/ExampleQuestion.js) on the beat that react-cmi5 repo.  This gives us a starting point for playing around with Cmi5.
+There is a basic question [in this example](https://github.com/beatthat/react-cmi5/blob/master/example/single-question-assignable-unity/src/ExampleQuestion.js) found while looking around the react-cmi5 repo.  This gives us a starting point for playing around with Cmi5.
 
 ### Fixing the linting errors with quick fixes
 
@@ -363,6 +432,41 @@ Property 'type' does not exist on type 'Element'.ts(2339)
 
 All up it took about an hour to fix the linting in a single file.  I shouldn't say *fix* either.  When this project was set up, it was for a technical test, and I spent a lot of time trying to impress by setting up linting with tbe strictest airbnb stylesheet.
 
+### End of line settings
+
+As noted in the previous section, after coming back to this project a few months later on a different laptops, now Windows, not Mac, all the .tsx files were filled with linting errors, the most common being:
+
+```txt
+Expected linebreaks to be 'LF' but found 'CRLF'.eslintlinebreak-style
+```
+
+This is on the end of every line, making the entire file overview on the right hand side of the VSCode editor completely red.  The quick hack fix for this is this line at the top of every file you edit:
+
+```js
+/* eslint-disable linebreak-style */
+```
+
+When integrating Prettier and migrating from TSLint to ESLint at work, being the only front end dev with a Windows machine caused the same issue, which I fixed with this:
+
+#### **`eslintrc.json`**
+
+```json
+"rules": {
+  "prettier/prettier": ["error", {
+    "endOfLine": "auto"
+}],
+```
+
+When working in a team environment, the interactions between linting rules, editors and version control can be a bit of a bummer when it causes problems.  Thanks to the Windows developers for not playing nice, Windows will convert  LF to CRLF when checking files out, but not convert back when checking them in.  That's not very nice.
+
+One solution is for each developer to handle their own editor settings.
+
+#### **`.gitattributes`**
+
+```txt
+*js text eol=lf
+```
+
 ## The xAPI Golf Example
 
 To try xAPI in practice an LRS is setup.  After looking at a few options, a free account [at lrs.io](https://lrs.io/ui/lrs/sample-lrs-onlunez/) is using 4 out of 100 megabytes.
@@ -380,7 +484,7 @@ Man, I called it.  OK, I was one year off.  I have to say that, no one else seem
 
 Here is [something recent](https://www.valamis.com/hub/xapi) where it says xApi is the current standard.
 
-#### The highlights
+### The highlights
 
 Doing a deep dive into the index.html file on the repo.  Let's break it down into the highlights.
 
@@ -597,6 +701,8 @@ Here are all the notes from the initial challenge in reverse order.
 
 ### Testing the submit button
 
+#### **`src\components\dynamicForms\DynamicForm.tsx`**
+
 ```js
 const handleSubmit = (event) => {
   event.preventDefault();
@@ -609,7 +715,6 @@ In the DynamicForms.tsx:
 
 ```js
   const [ input, setInput] = useState({});
-  /* eslint-enable */
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     props.onSubmit(input);

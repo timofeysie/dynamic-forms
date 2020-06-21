@@ -1,6 +1,4 @@
 /* eslint-disable linebreak-style */
-/* eslint-disable linebreak-style */
-/* eslint-disable linebreak-style */
 import React from 'react';
 // @ts-ignore
 import TinCan from 'tincanjs';
