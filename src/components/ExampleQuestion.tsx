@@ -20,7 +20,7 @@ export default class ExampleQuestion extends Component<
   render() {
     // props includes special actions for passed({score:1.0}) and failed({score: 0.0 })
     // These are wrappers for cmi.passed and cmi.failed
-    // that make sure cmi has initialized before score is actually sent
+    // that makes sure cmi has initialized before score is actually sent
     // eslint-disable-next-line no-unused-vars
     const { passed, failed } = this.props;
 
@@ -70,7 +70,7 @@ export default class ExampleQuestion extends Component<
                   id="r2"
                   className="form-control"
                   name="answer"
-                  value="0"
+                  value="1"
                   onChange={(e) => onSelectAnswer(e)}
                 />
               </label>
@@ -83,7 +83,7 @@ export default class ExampleQuestion extends Component<
                   id="r3"
                   className="form-control"
                   name="answer"
-                  value="1"
+                  value="2"
                   onChange={(e) => onSelectAnswer(e)}
                 />
               </label>
@@ -96,7 +96,7 @@ export default class ExampleQuestion extends Component<
                   id="r4"
                   className="form-control"
                   name="answer"
-                  value="0"
+                  value="3"
                   onChange={(e) => onSelectAnswer(e)}
                 />
               </label>

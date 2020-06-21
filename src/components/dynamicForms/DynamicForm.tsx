@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 import React, { useState } from 'react';
 import './style.css';
 import InputTextField from './inputs/InputTextField';
@@ -11,7 +12,6 @@ const DynamicForm = (props: any) => {
   // fixing this causes the tests to break.
   const [ fields ] = useState(props.fields);
   const [ input, setInput] = useState({});
-  /* eslint-enable */
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();

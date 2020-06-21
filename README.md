@@ -1,5 +1,14 @@
 # Dynamic Forms
 
+## Table of contents
+
+- [How to send an xAPI statement](#how-to-send-an-xAPI-statement)
+- [Try out react-cmi5](#try-out-react-cmi5)
+- [The xAPI Golf Example](#the-xAPI-Golf-Example)
+- [The Lilianfelds Form](#the-Lilianfelds-Form)
+- [Dynamic Forms Challenge](#dynamic-Forms-Challenge)
+- [Original readme](#original-readme)
+
 ## Workflow
 
 ```shell
@@ -7,6 +16,122 @@ npm start
 npm test
 npm run build
 ```
+
+## How to send an xAPI statement
+
+Looking at the [first exercise of the official xAPI JavaScript docs](https://xapi.com/try-developer/?utm_source=google&utm_medium=natural_search), there are four steps to get to sending a statement.
+
+1. Get a library
+2. Install the library
+3. Configure the LRS
+4. Send the statement
+
+For this exercise, we will send the inputs of a dynamic form submission to our LRS.  In the in the previous section, React-cmi5, a wrapper component for an xapi/cmi5 AU was installed.  It's not the same thing as the lib mentioned here.
+
+This is shown in the code snippet for #2:
+
+```html
+<script src="tincan.js"></script>
+```
+
+We would of course like to use npm to put the lib in the node_modules, as is standard.  So our options are:
+
+- [tincanjs](https://www.npmjs.com/package/tincanjs), A JavaScript library for implementing the Experience API (Tin Can API).  Published 4 years ago.
+- [tincan](https://www.npmjs.com/package/tincan), tincan-nodejs
+A thin wrapper for reading and writing data using the tincan.me API using Node.JS. Published 7 years ago.
+
+We not using NodeJS, so the first one may be appropriate.
+
+```bash
+npm install tincanjs
+```
+
+### 3. Configure the LRS
+
+```js
+endpoint: "https://lrs.example.com/tin-can-endpoint/",
+username: "key, login or username",
+password: "secret, password or pass"
+```
+
+So, we're just going to add our LRS password to the front end code?
+
+There is a [management link](https://lrs.io/ui/lrs/sample-lrs-onlunez/keys/create/) on the LRS chosen with a create new access key option that has the following defaults:
+
+```txt
+KEY NAME access-key
+READ XAPI PERMISSION: check
+WRITE XAPI PERMISSION: check
+LIMITED READ
+ADVANCED QUERIES
+JWT ACCESS
+ENABLED: check
+USERNAME: wupver
+PASSWORD: nuwimu
+```
+
+Looking at the result, it's the same as the Sample Credentials provided when the account was created:
+
+```txt
+Username: username
+Password: password
+```
+
+The docs say: *Keys can also be used to sign a JSON Web Token (JWT). If your application knows the secret password from a key with the Sign JWT permission enabled, it can create a one time use token to be provided to the xAPI client.*
+
+If that's the case, and JWT ACCESS is not ticked, then what are they good for?  What is our endpoint?  That's what we need for the exercise.  On the analytics page we see this:
+
+```txt
+https://sample-lrs-onlunez.lrs.io/xapi/
+```
+
+That's worth a shot.
+
+The next part is how to get the library to work in TypeScript.  This is the usual process of finding out that not everyone lives in the current era of front end development.
+
+```js
+import TinCan from 'tincanjs';
+```
+
+```txt
+Could not find a declaration file for module 'tincanjs'. 'c:/Users/timof/repos/timofeysie/dynamic-forms/node_modules/tincanjs/build/tincan-node.js' implicitly has an 'any' type.
+  Try `npm install @types/tincanjs` if it exists or add a new declaration (.d.ts) file containing `declare module 'tincanjs';`ts(7016)
+```
+
+```bash
+>npm install @types/tincanjs
+npm ERR! code E404
+npm ERR! 404 Not Found - GET https://registry.npmjs.org/@types%2ftincanjs - Not found
+npm ERR! 404  '@types/tincanjs@latest' is not in the npm registry.
+```
+
+We could create a .d.ts file as [described here](https://stackoverflow.com/questions/41292559/could-not-find-a-declaration-file-for-module-module-name-path-to-module-nam), but since this is just a test, the following will work to get a move on:
+
+```js
+// @ts-ignore
+```
+
+Then, creating the statement as shown in the example works fine.  Refresh the analytics page of the LRS and there are now 2142 Statements, one more than before the refresh.
+
+The analytics page has the following graphs:
+
+- Activity Over Time
+- Actors With The Most Events
+- Recently Active Objects
+- Weekly Traffic
+- Sessions
+- Actor Behavior
+- Activity Over Time Breakdown
+- Most Active Parent Contexts
+- Most Active Grouping Contexts
+- High Scoring Objects
+- Low Scoring Objects
+- Verb Type
+- Activity By Authority
+
+Pretty nice.  Next is the ["prototypes"](https://xapi.com/prototypes/) exercise.
+
+Another example is the [location tour demo](https://xapi.com/wp-content/assets/ClientPrototypes/Locator_TCAPI/index.html?endpoint=https%3A%2F%2Fcloud.scorm.com%2FScormEngineInterface%2FTCAPI%2Fpublic%2F&auth=Basic%20VGVzdFVzZXI6cGFzc3dvcmQ%3D&actor=%7B%22mbox%22%3A%22mailto%3Atest%40beta.projecttincan.com%22%2C%22name%22%3A%22Test%20User%22%2C%22objectType%22%3A%22Agent%22%7D&registration=e168d6a3-46b2-4233-82e7-66b73a179727).  Pretty cool idea, but the example code doesn't work.  No doubt google is not defined.
 
 ## Try out react-cmi5
 
@@ -34,18 +159,87 @@ The [Summary of cmi5 in Action](https://xapi.com/cmi5-technical-101/?utm_source=
 12. LMS may determine that a Session has been concluded without a “Terminated” statement having been recorded, at which point it records an “Abandoned” Statement
 Multiple sessions in various launch modes may occur for the same Registration
 
-Sone definitions
+#### Sone definitions
 
 - Learning Management Systems (LMS)
 - Assignable Units (AU)
 
-The launchable piece of content that includes the concepts of completion, pass/fail, score, and duration. Each course requires at least one AU. AU metadata is captured in the Course structure file, but content assets may be included in a package or hosted remotely.
+The launch-able piece of content that includes the concepts of completion, pass/fail, score, and duration. Each course requires at least one AU. AU metadata is captured in the Course structure file, but content assets may be included in a package or hosted remotely.
 
 ### React Cmi5
 
 React wrapper component for an xapi/cmi5 assignable unit [from this repo](https://github.com/beatthat/react-cmi5/blob/master/README.md).
 
-EsLint is now causing problems in this project.  The VSCode file structure window is all read with comments like this:
+After spending too much time on linting detailed in the [Problems with linting](#Problems with linting) section below, the form works.  It is a simple multiple choice form which does nothing yet.
+
+The example question itself doesn't involve any cmi5, but is wrapped in a cmi5 tag.
+
+```html
+<Cmi5AU>
+  <ExampleQuestion />
+</Cmi5AU>
+```
+
+In the example question component, there are some props and an onSubmit function:
+
+```js
+    // props includes special actions for passed({score:1.0}) and failed({score: 0.0 })
+    // These are wrappers for cmi.passed and cmi.failed
+    // that make sure cmi has initialized before score is actually sent
+    const {passed, failed} = this.props
+
+    const onSubmit = () => {
+      const score = this.state.score // score was set when user chose a radio-button answer
+      if(score > 0) {
+        this.props.passed(score)
+      }
+      else {
+        this.props.failed(score)
+      }
+      this.props.terminate() // MUST call terminate to end the session
+    }
+```
+
+It's inside a class file, which is something that will have to change.  One mandate for this project is that it avoids classes and uses the latest in React hooks and functional programming.  But this can wait for some refactoring after the example is working.
+
+On it's own, the example is basically pseudo code.  There is no form yet, just:
+
+```html
+<div>
+  question form here
+  <button onClick={onSubmit}>submit</button>
+</div>
+```
+
+The [example question](https://github.com/beatthat/react-cmi5/blob/master/example/single-question-assignable-unity/src/ExampleQuestion.js) markup provides the basic radio button multiple choice question.
+
+The notes point out that as a child of Cmi5AssignableUnit the important piece to note is the use of the injected action properties 'passed' and 'failed', which the question can use to submit results.  Now that we have a LRS setup to send statements from the result of the initial dynamic form, the cmi5 form should do the same.  But there is no code showing what happens with the submit from the example question.
+
+After a few more clicks up and down, it appears [the other example](https://github.com/beatthat/react-cmi5/tree/master/example/assignable-unity-sends-multiple-scores-in-result) in the source file has the answer for that.
+
+*An example CMI5 assignable unit that connects to an LMS (the XAPI backend of an LMS) and reads/writes an xapi statement.*
+
+It's work quoting more of these notes:
+
+#### To satisfy the cmi5 protocol, you will need the following params
+
+- `fetch`: a url to retrieve an access token for your XAPI server
+- `endpoint`: the root endpoint for your XAPI server
+- `activityId`: IRI/id for the XAPI object this assignable unit represents (callbacks to 'passed', 'failed' etc. will use this activity id)
+- `registration`: basically an XAPI session id
+- `actor`: account for which results will be applied (passed as a json XAPI actor object)
+
+Details for the above are here in the cmi5 spec [here](https://github.com/AICC/CMI-5_Spec_Current/blob/quartz/cmi5_spec.md#81-launch-method)
+
+For reference, the below is what an example url might look like
+
+```txt
+http://localhost:3000/?fetch=http://qa-pal.ict.usc.edu/api/1.0/cmi5/accesstoken2basictoken?access_token=41c847e0-fccd-11e8-8b7f-cf001aed3365&endpoint=http://qa-pal.ict.usc.edu/api/1.0/cmi5/&activityId=http://pal.ict.usc.edu/lessons/cmi5-ex1&registration=957f56b7-1d34-4b01-9408-3ffeb2053b28&actor=%7B%22objectType%22:%20%22Agent%22,%22name%22:%20%22taflearner1%22,%22account%22:%20%7B%22homePage%22:%20%22http://pal.ict.usc.edu/xapi/users%22,%22name%22:%20%225c0eec7993c7cf001aed3365%22%7D%7D
+```
+
+### Problems with linting
+
+EsLint is now causing problems in this project.  The VSCode file structure window is all red with comments like this:
 
 ```txt
 module "c:/Users/timof/repos/timofeysie/dynamic-forms/node_modules/@types/react/index"
@@ -89,7 +283,7 @@ export default class ExampleQuestion extends Component<IExampleQuestionProps, IE
 
 Of course, it's a good idea to read to code and add the correct types.  For now, just getting the example to work is enough.  Just is just to find out what Cmi5 is all about.
 
-There is a basic question [in this example](https://github.com/beatthat/react-cmi5/blob/master/example/single-question-assignable-unity/src/ExampleQuestion.js) on the beat that react-cmi5 repo.  This gives us a starting point for playing around with Cmi5.
+There is a basic question [in this example](https://github.com/beatthat/react-cmi5/blob/master/example/single-question-assignable-unity/src/ExampleQuestion.js) found while looking around the react-cmi5 repo.  This gives us a starting point for playing around with Cmi5.
 
 ### Fixing the linting errors with quick fixes
 
@@ -238,7 +432,42 @@ Property 'type' does not exist on type 'Element'.ts(2339)
 
 All up it took about an hour to fix the linting in a single file.  I shouldn't say *fix* either.  When this project was set up, it was for a technical test, and I spent a lot of time trying to impress by setting up linting with tbe strictest airbnb stylesheet.
 
-### the Golf Example
+### End of line settings
+
+As noted in the previous section, after coming back to this project a few months later on a different laptops, now Windows, not Mac, all the .tsx files were filled with linting errors, the most common being:
+
+```txt
+Expected linebreaks to be 'LF' but found 'CRLF'.eslintlinebreak-style
+```
+
+This is on the end of every line, making the entire file overview on the right hand side of the VSCode editor completely red.  The quick hack fix for this is this line at the top of every file you edit:
+
+```js
+/* eslint-disable linebreak-style */
+```
+
+When integrating Prettier and migrating from TSLint to ESLint at work, being the only front end dev with a Windows machine caused the same issue, which I fixed with this:
+
+#### **`eslintrc.json`**
+
+```json
+"rules": {
+  "prettier/prettier": ["error", {
+    "endOfLine": "auto"
+}],
+```
+
+When working in a team environment, the interactions between linting rules, editors and version control can be a bit of a bummer when it causes problems.  Thanks to the Windows developers for not playing nice, Windows will convert  LF to CRLF when checking files out, but not convert back when checking them in.  That's not very nice.
+
+One solution is for each developer to handle their own editor settings.
+
+#### **`.gitattributes`**
+
+```txt
+*js text eol=lf
+```
+
+## The xAPI Golf Example
 
 To try xAPI in practice an LRS is setup.  After looking at a few options, a free account [at lrs.io](https://lrs.io/ui/lrs/sample-lrs-onlunez/) is using 4 out of 100 megabytes.
 
@@ -255,7 +484,7 @@ Man, I called it.  OK, I was one year off.  I have to say that, no one else seem
 
 Here is [something recent](https://www.valamis.com/hub/xapi) where it says xApi is the current standard.
 
-#### The highlights
+### The highlights
 
 Doing a deep dive into the index.html file on the repo.  Let's break it down into the highlights.
 
@@ -376,8 +605,8 @@ questions when given a problem before they solve it.
 
 There also needs to be information about the document helpful in organizing the eventual list of form submissions.
 
-* date
-* label
+- date
+- label
 
 The initial content for the form is as follows.
 
@@ -423,11 +652,379 @@ range: 1 2 3 4 5
 
 More research needs to be done in how to sort and summarize the answers to these questions.  The brief states that the method builds the skills involved in recognizing when these cognitive skills should be used, knowing how to use them, and why to use them.
 
-So information can be ordered/scored on the following criteria0:
+So information can be ordered/scored on the following criteria:
 
 1. when these cognitive skills should be used
 2. knowing how to use them
 3. why to use them
+
+
+
+Using an LRS (Learning Record Store) might be a solution to this.  Using the e-learning reporting approach, we should get what we want from the above.
+
+The lrs.io demo account used to work with the xAPI code has an analytics page has the following graphs:
+
+- Activity Over Time
+- Actors With The Most Events
+- Recently Active Objects
+- Weekly Traffic
+- Sessions
+- Actor Behavior
+- Activity Over Time Breakdown
+- Most Active Parent Contexts
+- Most Active Grouping Contexts
+- High Scoring Objects
+- Low Scoring Objects
+- Verb Type
+- Activity By Authority
+
+## Dynamic Forms Challenge
+
+The challenge was to create a React component that uses a JSON schema that dynamically creates a form and results in JSON outputted on submit.
+
+It is to be a release ready, original app that takes between 2 to 3 hours to complete.
+It was noted that the size of the task is ambitious and I wasn't expected to finish but to demonstrate how I would approach the problem.
+
+The original part is questionable.  I used [this article](https://medium.com/curofy-engineering/dynamic-forms-with-react-js-d25d7c4f53d1) as a guide, but spent time setting up linting and a decent build process, converting the code to use the latest in React hooks, and covering everything with decent unit tests.
+
+I started by implementing a single first/last name input and date of birth (validated older than 18) field that satisfy those requirements.
+
+Due to spending a large amount of the allotted time on the unit testing the submit function, I was not able to implement some of the other fields.  I thought it was better to have well a well functioning and tested base for further development that a shallow implementation without any tests.  
+
+I have detailed the unfinished work in [this issue](https://github.com/timofeysie/dynamic-forms/issues/5).
+
+After proceeding with the interview process which meant three more interviews with the team, CTO and managers including a whiteboard test, I got the green light from all parties, and the Coronaviarus pandemic reared it's ugly head, so they then put a hiring freeze in place at the same time I was offered a role somewhere else.
+
+After this I have occasionally implemented a bit more of the challenge by adding other component form types and tests.  Then I made a data model for the Lilianfels critical thinking checklist form and considered using this project as a test bed for xAPI code.
+
+Here are all the notes from the initial challenge in reverse order.
+
+### Testing the submit button
+
+#### **`src\components\dynamicForms\DynamicForm.tsx`**
+
+```js
+const handleSubmit = (event) => {
+  event.preventDefault();
+  props.onSubmit(input);
+};
+```
+
+This is the way the onsubmit bubbles up it's result:
+In the DynamicForms.tsx:
+
+```js
+  const [ input, setInput] = useState({});
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    props.onSubmit(input);
+  };
+```
+
+The result in the App.tsx file:
+
+```js
+  const onSubmit = (output: React.FormEvent<HTMLInputElement>) => {
+    console.log('output',output);
+  };
+```
+
+Trying to emulate that a bit in the test:
+
+```js
+  const onSubmitMock = jest.fn((output) => {
+      return output;
+    });
+```
+
+This doesn't work.  The result is still an empty object.  Maybe we have to mock/spy on the the useState input variable?
+
+### Adding snapshot testing
+
+During the week for February 3rd to 7th, added:
+
+```json
+    "react-test-renderer": "^16.12.0",
+    "react-testing-library": "^8.0.1"
+```
+
+And snapshot testing.
+
+Added snapshot testing and converted the form to a functional component
+
+### TODO
+
+- Make the DynamicForm component a function.
+[The source article](https://medium.com/curofy-engineering/dynamic-forms-with-react-js-d25d7c4f53d1) was written in Dec 10, 2018, so this takes some work.
+- Implement the rest of the input types in the demo.
+Reverse engineer the data from the test example in our dynamic form schema.
+- remove generic 'any' types
+- format the date picker output
+- Warning: Each child in a list should have a unique "key" prop.
+- Add gender, contact and guardian input types
+- Test the submit button #6
+
+Next, test changing the date (something like this):
+
+```js
+    const input = getByLabelText('Change text');
+    input.value= 'input text';
+    fireEvent.change(input);
+    fireEvent.click(getByText('Save'));
+    console.log('saved', getByTestId('saved').innerHTML);
+    expect(getByTestId('saved')).toHaveTextContent('input text')
+```
+
+```js
+const input = getByTestId("datepickerid").children[0].children[0].children[0];
+```
+
+```bash
+console.error node_modules/jsdom/lib/jsdom/virtual-console.js:29
+      Error: Uncaught [TypeError: props.onSubmit is not a function]
+          at reportException (C:\Users\timof\repos\timofeysie\dynamic-forms\node_modules\jsdom\lib\jsdom\living\helpers\runtime-script-errors.js:66:24)
+```
+
+### Validation
+
+Do we need a form element?
+
+https://codeburst.io/how-to-use-html5-form-validations-with-react-4052eda9a1d4
+Using HTML Constraint API validation 
+No regex here so wont solve the user name in one field restraint.
+
+https://stackoverflow.com/questions/41296668/reactjs-form-input-validation
+Use JS to do the validation, provides good flexibility.
+Do we validate in the input components or the dynamic form component?  Or both?
+
+Two words: /(\w.+\s).+/
+
+### The date picker
+
+Using react-datepicker - npm 500,000 weekly downloads.
+
+```txt
+TypeError: Cannot read property 'name' of undefined
+```
+
+The event is this:
+
+event Thu Feb 13 2020 13:02:57 GMT+1100 (Australian Eastern Daylight Time)
+
+Have to convert that to a un usable even with the date picker component I suppose.
+
+### Linting
+
+On a Saturday/Sunday stretch, did some work on the linting.
+
+Using a lot of /*eslint-disable*/ to get the linting done while the transition from class to functional component gets underway.
+
+Removed the old index in the components directory and used the new functional DynamicForm component and got the tests to pass and ran into the submit form to parent issue when Darragh arrived and I had to stop working and start drinking.
+
+Still trying to get the submit form action passed out of the dynamic form component into the calling parent, ie: App.tsx.
+
+```js
+const DynamicForm2 = (props: any) => {
+  const [onSubmit] = useState(props.onSubmit);
+  return (
+    <form onSubmit={() => {onSubmit}}>
+```
+
+The last line there causes this error:
+
+```txt
+Failed to compile.
+./src/components/dynamicForms/DynamicForm.tsx
+  Line 15:28:  Expected an assignment or function call and instead saw an expression  @typescript-eslint/no-unused-expressions
+```
+
+Search for the keywords to learn more about each error.
+
+Looking at this example:
+https://rangle.io/blog/simplifying-controlled-inputs-with-hooks/
+
+We can fix the on submit issue in the Dynamic Form, but still have problems getting that to the parent.
+
+```js
+const DynamicForm = (props: any) => {
+  const [onSubmit] = useState(props.onSubmit);
+  const [fields, setFields] = useState(props.fields);
+  const [inputState, setInputState] = useState(props);
+  const handleSubmit = (evt: any) => {
+    evt.preventDefault();
+    onSubmit(inputState);
+  }
+  const handleChange = (event: any) => {
+    setInputState({
+      [event.currentTarget.name]: event.currentTarget.value,
+    });
+  };
+  return (
+    <form onSubmit={handleSubmit}>
+```
+
+Then we get:  ```TypeError: onSubmit is not a function```
+
+The golden ticket that lets us move forward is:
+Instead of this:
+
+```js
+const [onSubmit] = useState(props.onSubmit);
+```
+
+This:
+
+```js
+props.onSubmit(inputState);
+```
+
+Next, adding a new text area component, realized it was not needed.  Looking at the validation required however, a date field is the next thing we should worry about.  As well as validation for both:
+
+```txt
+name
+    text based
+    should enforce the need for a first and last name (separated by a space)
+date of birth
+    date based
+    required, should be older than 18
+```
+
+The output will look like this:
+
+```json
+{
+    name: "John Foo",
+    dob: "1990-01-01",
+```
+
+So we need to add a validation field and micro-syntax to allow the input components to do it.
+
+First, the text area does not show up in the submit.
+
+```js
+const [fields] = useState(props.fields);
+  const [...inputFields] = useState(props);
+```
+
+This is the way it's shown in the article (which uses a class):
+
+```js
+ const { fields, ...inputFields } = this.state;
+```
+
+This breaks the app:
+
+```js
+const [fields, inputFields] = useState(props);
+```
+
+The key is how the state is updated:
+
+```js
+[event.currentTarget.name]: event.currentTarget.value,
+```
+
+[Source](https://medium.com/curofy-engineering/dynamic-forms-with-react-js-d25d7c4f53d1)
+
+The article says: *In the Form component, _handleChange will trigger onChange from the child component and will store the state with respect to the ‘name: value’ of the element.*
+
+Not sure about that since we've changed so much.  The last input edited is the only one that shows up on submit.
+
+The state doesn't need to be connected to the fields that are passed in.  The form can keep it's own state and then on submit, create the final json that will be emitted.  So we should have all we need now to do that.  Then get on with validating the name field and then creating the date component.
+
+The answer was simple, but took some strange error making to point me in the right direction.
+
+```js
+const [ input, setInput] = useState({});
+...
+  const handleChange = (event: React.FormEvent<HTMLInputElement>): void => {
+    setInput({
+      ...input, 
+        [event.currentTarget.name]: event.currentTarget.value
+    });
+  };
+```
+
+Then our output in the parent App.tsx file is: 
+
+```json
+{email: "asdf", some-name: "dsa"}
+```
+
+There we go.  Next up, convert that text field to a date picker, then change the first input to name with two part validation and we're on our way.
+DO some TDD by creating the test and then making it pass.
+
+```js
+interface IProps {
+  fields: any
+}
+const DynamicForms = ({
+  fields
+}: IProps) => (
+```
+
+### The details of our frontend challenge
+
+#### Purpose:
+
+We want you to create a React component that can render different forms, e.g. sign up, mailing list registration, feedback form. Given the proposed variety to support, we want to create a single component that can be easily adapted.
+
+#### Details:
+
+Create a React component that can accept a JSON-based form definition via a prop and produce a form that, in this case, can be used to collect a person’s details. The form should include the following fields:
+
+```txt
+name
+    text based
+    should enforce the need for a first and last name (separated by a space)
+date of birth
+    date based
+    required, should be older than 18
+gender
+    options based (male/female)
+    optional
+contact number
+    text based
+    optional
+    allow for multiple values (e.g. mobile, home, etc)
+require guardian consent
+    checkbox
+    optional
+guardian details (name, contact)
+    text based
+    required/applicable if consent checkbox is ticked
+```
+
+The form should provide the resulting form data on successful submission. A valid output for the form might be the following:
+
+```js
+{
+    name: "John Foo",
+    dob: "1990-01-01",
+    gender: 1,
+    contact: [{
+        type: "mobile",
+        value: "0400123123"
+    },{
+        type: "home",
+        value: "610000000"
+    }],
+    guardian: {
+        name: "Jane Foo",
+        contact: "0400123123"
+    }
+}
+```
+
+The form should be generated at runtime based on a JSON schema that you devise. Changing the schema should alter what fields are shown and what data is returned on submit.
+
+Please ensure the code is original - please don't not use an existing form library.
+
+We expect you to spend 1 - 2 hours on the task, although you’re welcome to spend longer if interested. The size of the task is ambitious so we don't expect you to finish. We are looking at how you approach the problem.
+
+Please treat the task as if you were producing code ultimately for release. Please use Git and make a commit at the start (i.e. blank repo) and after an hour. In your closing commit please mention the total amount of time you spend on the task.
+
+If you have any questions about the problem, please feel free to ask me. Once finished, please send the repo through to me.
 
 ## Original readme
 
