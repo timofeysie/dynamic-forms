@@ -231,11 +231,99 @@ It's work quoting more of these notes:
 
 Details for the above are here in the cmi5 spec [here](https://github.com/AICC/CMI-5_Spec_Current/blob/quartz/cmi5_spec.md#81-launch-method)
 
-For reference, the below is what an example url might look like
+The spec is pretty old school.  It makes me realize that Swagger saves people having to write giant boring to read specifications in order to use an API.  It seems to me however that the people who wrote the spec made it as a kind of barrier to entry, so that a company would have to hire Rustici to implement the spec.  It it was easy to use xAPI, they wouldn't have had to make another spec cmi5 to use it, and force developers to learn/read two whole separate APIs.
+
+### Assignable Unit sends multiple scores in result
+
+The previous section, [React Cmi5](#react-Cmi5) showed the single question assignable unit example.
+
+Next we will look at creating the [assignable unity sends multiple scores in result](https://github.com/beatthat/react-cmi5/blob/master/example/assignable-unity-sends-multiple-scores-in-result/src/ExampleQuestion.js) class.
+
+It has a state with its associated set state function looks like this:
+
+```js
+    this.state = {
+      knowledgeComponents: {
+        a: 0,
+        b: 0,
+        c: 0,
+        d: 0
+      }
+    }
+    this.onKnowledgeComponentScoreUpdated = this.onKnowledgeComponentScoreUpdated.bind(this);
+
+    onKnowledgeComponentScoreUpdated(topicId, e) {
+    const score = e.target.value / 100.0
+    this.setState({
+      ...this.state,
+      knowledgeComponents: {
+        ...this.state.knowledgeComponents,
+        [topicId]: score
+      }
+    })
+  }
+```
+
+In the first example there was on passed and failed props.  The second example adds terminate as well.
+
+```js
+const {passed, failed, terminate} = this.props
+```
+
+Before the score was set directly, but now the score will be the average of all the knowledge-component scores.
+
+The onSubmit function is substatially different, with examples of special actions for passed and failed.  Not sure for what or how terminate is used.
+
+```js
+const onSubmit = () => {
+  // just make the score the avg of all the knowledge-component scores
+  const score = Object.getOwnPropertyNames(this.state.knowledgeComponents).reduce((acc, cur, i) => {
+    return ((acc * (i)) + this.state.knowledgeComponents[cur]) / (i + 1)
+  }, 0)
+  const extensions = {
+    "https://pal.ict.usc.edu/xapi/vocab/exts/result/kc-scores": 
+    Object.getOwnPropertyNames(this.state.knowledgeComponents).reduce((acc, cur, i) => {
+      return [
+        ...acc, 
+        {
+          kc: cur, // just for reference, in this extension domain, 'kc' is a knowledge component
+          score: this.state.knowledgeComponents[cur]}
+      ]
+    }, [])
+  }
+  if (score > 0) {
+    passed(score, extensions)
+  } else { 
+    failed(score, extensions)
+  }
+  terminate()
+}
+```
+
+What is knowledge component (KC)?  Not sure but it needs to be added to the IExampleQuestionProps.  Since this is just an investigation into smi5, may as well replace the example question with this version and see how it goes.  As well as typing stuff since we are using TypeScript here, not vanilla, we have some other linting errors.  This one is on the setState function:
+
+```js
+this.setState({
+  ...this.state,
+  knowledgeComponents: {
+    ...this.state.knowledgeComponents,
+    [topicId]: score,
+  },
+```
+
+Red squiggly line under this.state:
 
 ```txt
-http://localhost:3000/?fetch=http://qa-pal.ict.usc.edu/api/1.0/cmi5/accesstoken2basictoken?access_token=41c847e0-fccd-11e8-8b7f-cf001aed3365&endpoint=http://qa-pal.ict.usc.edu/api/1.0/cmi5/&activityId=http://pal.ict.usc.edu/lessons/cmi5-ex1&registration=957f56b7-1d34-4b01-9408-3ffeb2053b28&actor=%7B%22objectType%22:%20%22Agent%22,%22name%22:%20%22taflearner1%22,%22account%22:%20%7B%22homePage%22:%20%22http://pal.ict.usc.edu/xapi/users%22,%22name%22:%20%225c0eec7993c7cf001aed3365%22%7D%7D
+Use callback in setState when referencing the previous state.eslintreact/no-access-state-in-setstate
 ```
+
+Have to bow out on that one for now with this line:
+
+```ts
+// eslint-disable-next-line react/no-access-state-in-setstate
+```
+
+Disabled a bunch more rules that were fighting against Prettier and now there are four sliders and a new submit button.  What's next?
 
 ### Problems with linting
 
