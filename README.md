@@ -137,7 +137,11 @@ Another example is the [location tour demo](https://xapi.com/wp-content/assets/C
 
 ### [Issue #15](https://github.com/timofeysie/dynamic-forms/issues/15)
 
-What is cmi5?  I've used the xAPI before for e-learning project, and lurk around the spec project.  One issue that came up ended up having a comment about cmi5 which appears to be a stripped down/focused use case of the xAPI.
+What is cmi5?
+
+A set of “extra rules” for xAPI.  cmi5 is a “profile” for using the xAPI specification with traditional learning management (LMS) systems.
+
+I've used the xAPI before for e-learning project, and lurk around the spec project.  One issue that came up ended up having a comment about cmi5 which appears to be a stripped down/focused use case of the xAPI.
 
 These are some notes about what it is an how it's used.
 
@@ -243,15 +247,9 @@ It has a state with its associated set state function looks like this:
 
 ```js
     this.state = {
-      knowledgeComponents: {
-        a: 0,
-        b: 0,
-        c: 0,
-        d: 0
-      }
+      knowledgeComponents: { a: 0, b: 0, c: 0, d: 0 }
     }
     this.onKnowledgeComponentScoreUpdated = this.onKnowledgeComponentScoreUpdated.bind(this);
-
     onKnowledgeComponentScoreUpdated(topicId, e) {
     const score = e.target.value / 100.0
     this.setState({
@@ -324,6 +322,51 @@ Have to bow out on that one for now with this line:
 ```
 
 Disabled a bunch more rules that were fighting against Prettier and now there are four sliders and a new submit button.  What's next?
+
+### AICC client examples
+
+The AICC is the Advanced Distributed Learning Initiative.
+The site has a [GitHub](https://aicc.github.io/CMI-5_Spec_Current/client/) with 3 examples for using the cmi5 client library.
+
+- Hello World
+- Simple Completed
+- Passed/Failed
+
+#### Example #1, Hello World
+
+This shows a basic setup that uses three libraries
+
+- xAPIWrapper ([ADL wrapper library](https://github.com/adlnet/xAPIWrapper/tree/master/dist))
+- cmi5Controller.js ([See](https://github.com/adlnet/cmi5-Client-Library/tree/master/Examples/Scripts))
+- cmi5Wrapper.js ([See](https://github.com/adlnet/cmi5-Client-Library/tree/master/Examples/Scripts))
+
+Then we go through these steps:
+
+1. Parse launch parameters passed on the URL Launch line and set properties of the cmi5 controller.
+2. Call the cmi5Controller.startUp() method. Two call back functions are passed:
+3. Create the “cmi5Ready” function.
+4. Create the “startUpError” function.
+5. Add reference to FinishAU() in your UI for learner exit event.
+
+#### Example #2 Simple Completed
+
+The learner completes the activities in an AU presentation and exits.  As well as the steps listed in example one, there is the following.
+
+1. When learner finishes all activities - Send Completed Statement
+2. Add reference to FinishAU() in your UI for learner exit event.
+
+#### Example #3 Passed/Failed
+
+The learner is assessed in a scored activity.
+
+The activity has a MasteryScore associated with it from the course structure.
+
+Steps 1 thru 7 (Same as Example #1)
+
+1. Get the MasteryScore
+2. Assess Learner (Learner performs assessment activity)
+3. Judge Score – Based on Score , Send Statement:
+4. Add reference to FinishAU() in your UI for learner exit event.
 
 ### Problems with linting
 
