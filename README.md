@@ -19,7 +19,7 @@ npm run build
 
 ## How to send an xAPI statement
 
-Looking at the [first exercise of the official xAPI JavaScript docs](https://xapi.com/try-developer/?utm_source=google&utm_medium=natural_search), there are four steps to get to sending a statement.
+Looking at the [first exercise of the official xAPI JavaScript docs](https://xapi.com/try-developer), there are four steps to get to sending a statement.
 
 1. Get a library
 2. Install the library
@@ -137,13 +137,17 @@ Another example is the [location tour demo](https://xapi.com/wp-content/assets/C
 
 ### [Issue #15](https://github.com/timofeysie/dynamic-forms/issues/15)
 
-What is cmi5?  I've used the xAPI before for e-learning project, and lurk around the spec project.  One issue that came up ended up having a comment about cmi5 which appears to be a stripped down/focused use case of the xAPI.
+What is cmi5?
+
+A set of “extra rules” for xAPI.  cmi5 is a “profile” for using the xAPI specification with traditional learning management (LMS) systems.
+
+I've used the xAPI before for e-learning project, and lurk around the spec project.  One issue that came up ended up having a comment about cmi5 which appears to be a stripped down/focused use case of the xAPI.
 
 These are some notes about what it is an how it's used.
 
 You can read more on the AICC [Cmi5 project](https://github.com/AICC/CMI-5_Spec_Current/blob/quartz/cmi5_spec.md#overview).  What is AICC?  The title of their profile says only *The cmi5 Project xAPI Profile for LMS systems*.  That isn't exactly an acronym for AICC.
 
-The [Summary of cmi5 in Action](https://xapi.com/cmi5-technical-101/?utm_source=google&utm_medium=natural_search) provides a good checklist for what we would want a client to implement:
+The [Summary of cmi5 in Action](https://xapi.com/cmi5-technical-101) provides a good checklist for what we would want a client to implement:
 
 1. Create Course structure
 2. Add AUs and Blocks to Course
@@ -231,11 +235,198 @@ It's work quoting more of these notes:
 
 Details for the above are here in the cmi5 spec [here](https://github.com/AICC/CMI-5_Spec_Current/blob/quartz/cmi5_spec.md#81-launch-method)
 
-For reference, the below is what an example url might look like
+The spec is pretty old school.  It makes me realize that Swagger saves people having to write giant boring to read specifications in order to use an API.  It seems to me however that the people who wrote the spec made it as a kind of barrier to entry, so that a company would have to hire Rustici to implement the spec.  It it was easy to use xAPI, they wouldn't have had to make another spec cmi5 to use it, and force developers to learn/read two whole separate APIs.
+
+### Assignable Unit sends multiple scores in result
+
+The previous section, [React Cmi5](#react-Cmi5) showed the single question assignable unit example.
+
+Next we will look at creating the [assignable unity sends multiple scores in result](https://github.com/beatthat/react-cmi5/blob/master/example/assignable-unity-sends-multiple-scores-in-result/src/ExampleQuestion.js) class.
+
+It has a state with its associated set state function looks like this:
+
+```js
+    this.state = {
+      knowledgeComponents: { a: 0, b: 0, c: 0, d: 0 }
+    }
+    this.onKnowledgeComponentScoreUpdated = this.onKnowledgeComponentScoreUpdated.bind(this);
+    onKnowledgeComponentScoreUpdated(topicId, e) {
+    const score = e.target.value / 100.0
+    this.setState({
+      ...this.state,
+      knowledgeComponents: {
+        ...this.state.knowledgeComponents,
+        [topicId]: score
+      }
+    })
+  }
+```
+
+In the first example there was on passed and failed props.  The second example adds terminate as well.
+
+```js
+const {passed, failed, terminate} = this.props
+```
+
+Before the score was set directly, but now the score will be the average of all the knowledge-component scores.
+
+The onSubmit function is substantially different, with examples of special actions for passed and failed.  Not sure for what or how terminate is used.
+
+```js
+const onSubmit = () => {
+  // just make the score the avg of all the knowledge-component scores
+  const score = Object.getOwnPropertyNames(this.state.knowledgeComponents).reduce((acc, cur, i) => {
+    return ((acc * (i)) + this.state.knowledgeComponents[cur]) / (i + 1)
+  }, 0)
+  const extensions = {
+    "https://pal.ict.usc.edu/xapi/vocab/exts/result/kc-scores": 
+    Object.getOwnPropertyNames(this.state.knowledgeComponents).reduce((acc, cur, i) => {
+      return [
+        ...acc,
+        {
+          kc: cur, // just for reference, in this extension domain, 'kc' is a knowledge component
+          score: this.state.knowledgeComponents[cur]}
+      ]
+    }, [])
+  }
+  if (score > 0) {
+    passed(score, extensions)
+  } else {
+    failed(score, extensions)
+  }
+  terminate()
+}
+```
+
+What is knowledge component (KC)?  Not sure but it needs to be added to the IExampleQuestionProps.  Since this is just an investigation into smi5, may as well replace the example question with this version and see how it goes.  As well as typing stuff since we are using TypeScript here, not vanilla, we have some other linting errors.  This one is on the setState function:
+
+```js
+this.setState({
+  ...this.state,
+  knowledgeComponents: {
+    ...this.state.knowledgeComponents,
+    [topicId]: score,
+  },
+```
+
+Red squiggly line under this.state:
 
 ```txt
-http://localhost:3000/?fetch=http://qa-pal.ict.usc.edu/api/1.0/cmi5/accesstoken2basictoken?access_token=41c847e0-fccd-11e8-8b7f-cf001aed3365&endpoint=http://qa-pal.ict.usc.edu/api/1.0/cmi5/&activityId=http://pal.ict.usc.edu/lessons/cmi5-ex1&registration=957f56b7-1d34-4b01-9408-3ffeb2053b28&actor=%7B%22objectType%22:%20%22Agent%22,%22name%22:%20%22taflearner1%22,%22account%22:%20%7B%22homePage%22:%20%22http://pal.ict.usc.edu/xapi/users%22,%22name%22:%20%225c0eec7993c7cf001aed3365%22%7D%7D
+Use callback in setState when referencing the previous state.eslintreact/no-access-state-in-setstate
 ```
+
+Have to bow out on that one for now with this line:
+
+```ts
+// eslint-disable-next-line react/no-access-state-in-setstate
+```
+
+Disabled a bunch more rules that were fighting against Prettier and now there are four sliders and a new submit button.  What's next?
+
+### AICC client examples
+
+The AICC is the Advanced Distributed Learning Initiative.
+The site has a [GitHub](https://aicc.github.io/CMI-5_Spec_Current/client/) with 3 examples for using the cmi5 client library.
+
+- Hello World
+- Simple Completed
+- Passed/Failed
+
+#### Example #1, Hello World libraries
+
+This shows a basic setup that uses three libraries
+
+- xAPIWrapper ([ADL wrapper library](https://github.com/adlnet/xAPIWrapper))
+- cmi5Controller.js
+- cmi5Wrapper.js 
+
+FOr the last two, [see](https://github.com/adlnet/cmi5-Client-Library/tree/master/Examples/Scripts).  The first lib can be installed in the usual way.
+
+```bash
+npm i xapiwrapper
+```
+
+The two scripts from the cmi5-Client-Library don't exist on npm.  This is unfortunate.  Manually managing dependencies like this is not cool and a bit concerning for ADL in general.  The code is five years old now, and issues are turned off for good reason, who wants everyone asking why they don't make the package available on npm.
+
+For now we will have to go old school and include the scripts by hand:
+
+```html
+<script src="Scripts/cmi5Controller.js"></script>
+<script src="Scripts/cmi5Wrapper.js"></script>
+```
+
+#### Configuration steps
+
+Then we go through these steps:
+
+1. Parse launch parameters passed on the URL Launch line and set properties of the cmi5 controller.
+2. Call the cmi5Controller.startUp() method. Two call back functions are passed:
+3. Create the “cmi5Ready” function.
+4. Create the “startUpError” function.
+5. Add reference to FinishAU() in your UI for learner exit event.
+
+##### 1. Parse launch parameters
+
+Here we get the params from the url.  An example looks like this:
+
+```txt
+*url*/index.html?
+endpoint=https://cloud.scorm.com/ScormEngineInterface/TCAPI/public/&auth=Basic VGVzdFVzZXI6cGFzc3dvcmQ= &
+actor={
+  "mbox":"mailto:test@beta.projecttincan.com",
+  "name":"Test User",
+  "objectType":"Agent"
+} &
+registration=e168d6a3-46b2-4233-82e7-66b73a179727
+```
+
+Encoded it would lindex.ook like this:
+
+```txt
+*rl*/index.index.html%253Fendpoint%253Dhttps%253A%252F%252Fcloud.scorm.com%252FScormEngineInterface%252FTCAPI%252Fpublic%252F%2526auth%253DBasic%2520VGVzdFVzZXI6cGFzc3dvcmQ%253D%2526actor%253D%257B%2522mbox%2522%253A%2522mailto%253Atest%2540beta.projecttincan.com%2522%252C%2522name%2522%253A%2522Test%2520User%2522%252C%2522objectType%2522%253A%2522Agent%2522%257D%2526registration%253De...
+```
+
+These params are needed to configure the cmi5 controller will set functions like this:
+
+```js
+   cmi5Controller.setEndPoint(parse("endpoint"));
+```
+
+If you are using something like the React DOM Router, you could use one of it's functions to get the parameters.  However, there is an older way, from before the time that JavaScript ran on the server and had fancy arrows.
+
+```js
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const endpoint = urlParams.get("endpoint");
+```
+
+We just call that same function for each of the parameters we need, which is:
+
+- endpoint
+- fetch
+- registration
+- activityid
+- actor
+
+#### Example #2 Simple Completed
+
+The learner completes the activities in an AU presentation and exits.  As well as the steps listed in example one, there is the following.
+
+1. When learner finishes all activities - Send Completed Statement
+2. Add reference to FinishAU() in your UI for learner exit event.
+
+#### Example #3 Passed/Failed
+
+The learner is assessed in a scored activity.
+
+The activity has a MasteryScore associated with it from the course structure.
+
+Steps 1 thru 7 (Same as Example #1)
+
+1. Get the MasteryScore
+2. Assess Learner (Learner performs assessment activity)
+3. Judge Score – Based on Score , Send Statement:
+4. Add reference to FinishAU() in your UI for learner exit event.
 
 ### Problems with linting
 

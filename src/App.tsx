@@ -1,4 +1,5 @@
 /* eslint-disable linebreak-style */
+/* eslint-disable no-console */
 import React from 'react';
 // @ts-ignore
 import TinCan from 'tincanjs';
@@ -6,7 +7,8 @@ import './App.css';
 // @ts-ignore
 import Cmi5AU from 'react-cmi5';
 import DynamicForm from './components/dynamicForms/DynamicForm';
-import ExampleQuestion from './components/ExampleQuestion';
+import SingleQuestionAu from './components/cmi5/single-question-au';
+import AuSendsMultipleScoresInResult from './components/cmi5/au-sends-multiple-scores-in-result';
 
 const fields = [
   {
@@ -37,6 +39,9 @@ const fields = [
 ];
 
 const App = () => {
+  const query = new URLSearchParams();
+  const token = query.get('token');
+  console.log('token', token);
   /* eslint-disable */
   /* The above line is also needed to exclude the console log. */
   /* It's temporary, so when no longer needed remove this and the log. */
@@ -85,7 +90,8 @@ const App = () => {
       </header>
       <section className="Sections">
         <Cmi5AU>
-          <ExampleQuestion />
+          <SingleQuestionAu />
+          <AuSendsMultipleScoresInResult />
         </Cmi5AU>
       </section>
       <section className="Sections">

@@ -13,7 +13,7 @@ interface IExampleQuestionState {
   score?: any;
 }
 
-export default class ExampleQuestion extends Component<
+export default class SingleQuestionAu extends Component<
   IExampleQuestionProps,
   IExampleQuestionState
 > {
