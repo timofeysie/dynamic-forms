@@ -19,7 +19,7 @@ npm run build
 
 ## How to send an xAPI statement
 
-Looking at the [first exercise of the official xAPI JavaScript docs](https://xapi.com/try-developer/?utm_source=google&utm_medium=natural_search), there are four steps to get to sending a statement.
+Looking at the [first exercise of the official xAPI JavaScript docs](https://xapi.com/try-developer), there are four steps to get to sending a statement.
 
 1. Get a library
 2. Install the library
@@ -147,7 +147,7 @@ These are some notes about what it is an how it's used.
 
 You can read more on the AICC [Cmi5 project](https://github.com/AICC/CMI-5_Spec_Current/blob/quartz/cmi5_spec.md#overview).  What is AICC?  The title of their profile says only *The cmi5 Project xAPI Profile for LMS systems*.  That isn't exactly an acronym for AICC.
 
-The [Summary of cmi5 in Action](https://xapi.com/cmi5-technical-101/?utm_source=google&utm_medium=natural_search) provides a good checklist for what we would want a client to implement:
+The [Summary of cmi5 in Action](https://xapi.com/cmi5-technical-101) provides a good checklist for what we would want a client to implement:
 
 1. Create Course structure
 2. Add AUs and Blocks to Course
@@ -270,7 +270,7 @@ const {passed, failed, terminate} = this.props
 
 Before the score was set directly, but now the score will be the average of all the knowledge-component scores.
 
-The onSubmit function is substatially different, with examples of special actions for passed and failed.  Not sure for what or how terminate is used.
+The onSubmit function is substantially different, with examples of special actions for passed and failed.  Not sure for what or how terminate is used.
 
 ```js
 const onSubmit = () => {
@@ -282,7 +282,7 @@ const onSubmit = () => {
     "https://pal.ict.usc.edu/xapi/vocab/exts/result/kc-scores": 
     Object.getOwnPropertyNames(this.state.knowledgeComponents).reduce((acc, cur, i) => {
       return [
-        ...acc, 
+        ...acc,
         {
           kc: cur, // just for reference, in this extension domain, 'kc' is a knowledge component
           score: this.state.knowledgeComponents[cur]}
@@ -291,7 +291,7 @@ const onSubmit = () => {
   }
   if (score > 0) {
     passed(score, extensions)
-  } else { 
+  } else {
     failed(score, extensions)
   }
   terminate()
@@ -332,13 +332,30 @@ The site has a [GitHub](https://aicc.github.io/CMI-5_Spec_Current/client/) with 
 - Simple Completed
 - Passed/Failed
 
-#### Example #1, Hello World
+#### Example #1, Hello World libraries
 
 This shows a basic setup that uses three libraries
 
-- xAPIWrapper ([ADL wrapper library](https://github.com/adlnet/xAPIWrapper/tree/master/dist))
-- cmi5Controller.js ([See](https://github.com/adlnet/cmi5-Client-Library/tree/master/Examples/Scripts))
-- cmi5Wrapper.js ([See](https://github.com/adlnet/cmi5-Client-Library/tree/master/Examples/Scripts))
+- xAPIWrapper ([ADL wrapper library](https://github.com/adlnet/xAPIWrapper))
+- cmi5Controller.js
+- cmi5Wrapper.js 
+
+FOr the last two, [see](https://github.com/adlnet/cmi5-Client-Library/tree/master/Examples/Scripts).  The first lib can be installed in the usual way.
+
+```bash
+npm i xapiwrapper
+```
+
+The two scripts from the cmi5-Client-Library don't exist on npm.  This is unfortunate.  Manually managing dependencies like this is not cool and a bit concerning for ADL in general.  The code is five years old now, and issues are turned off for good reason, who wants everyone asking why they don't make the package available on npm.
+
+For now we will have to go old school and include the scripts by hand:
+
+```html
+<script src="Scripts/cmi5Controller.js"></script>
+<script src="Scripts/cmi5Wrapper.js"></script>
+```
+
+#### Configuration steps
 
 Then we go through these steps:
 
@@ -347,6 +364,49 @@ Then we go through these steps:
 3. Create the “cmi5Ready” function.
 4. Create the “startUpError” function.
 5. Add reference to FinishAU() in your UI for learner exit event.
+
+##### 1. Parse launch parameters
+
+Here we get the params from the url.  An example looks like this:
+
+```txt
+*url*/index.html?
+endpoint=https://cloud.scorm.com/ScormEngineInterface/TCAPI/public/&auth=Basic VGVzdFVzZXI6cGFzc3dvcmQ= &
+actor={
+  "mbox":"mailto:test@beta.projecttincan.com",
+  "name":"Test User",
+  "objectType":"Agent"
+} &
+registration=e168d6a3-46b2-4233-82e7-66b73a179727
+```
+
+Encoded it would lindex.ook like this:
+
+```txt
+*rl*/index.index.html%253Fendpoint%253Dhttps%253A%252F%252Fcloud.scorm.com%252FScormEngineInterface%252FTCAPI%252Fpublic%252F%2526auth%253DBasic%2520VGVzdFVzZXI6cGFzc3dvcmQ%253D%2526actor%253D%257B%2522mbox%2522%253A%2522mailto%253Atest%2540beta.projecttincan.com%2522%252C%2522name%2522%253A%2522Test%2520User%2522%252C%2522objectType%2522%253A%2522Agent%2522%257D%2526registration%253De...
+```
+
+These params are needed to configure the cmi5 controller will set functions like this:
+
+```js
+   cmi5Controller.setEndPoint(parse("endpoint"));
+```
+
+If you are using something like the React DOM Router, you could use one of it's functions to get the parameters.  However, there is an older way, from before the time that JavaScript ran on the server and had fancy arrows.
+
+```js
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const endpoint = urlParams.get("endpoint");
+```
+
+We just call that same function for each of the parameters we need, which is:
+
+- endpoint
+- fetch
+- registration
+- activityid
+- actor
 
 #### Example #2 Simple Completed
 

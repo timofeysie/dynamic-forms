@@ -22,6 +22,13 @@ export default class AuSendsMultipleScoresInResult extends Component<
   IExampleQuestionState
 > {
   constructor(props: IExampleQuestionProps) {
+    // const queryString = window.location.search;
+    // const urlParams = new URLSearchParams(queryString);
+    // cmi5Controller.setEndPoint(urlParams.get("endpoint"));
+    // cmi5Controller.setFetchUrl(urlParams.get("fetch"));
+    // cmi5Controller.setRegistration(urlParams.get("registration"));
+    // cmi5Controller.setActivityId(urlParams.get("activityid"));
+    // cmi5Controller.setActor(urlParams.get("actor"));
     super(props);
     this.state = {
       knowledgeComponents: {
@@ -96,7 +103,6 @@ export default class AuSendsMultipleScoresInResult extends Component<
           <div className="col-lg-1 col-md-1 col-sm-1">
             <div>KNOWLEDGE-0COMPONENT SCORES:</div>
             <div className="form-group">
-              // eslint-disable-next-line arrow-body-style
               {["a", "b", "c", "d"].map((id) => (
                 <div key={id}>
                   <label htmlFor={id}>

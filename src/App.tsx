@@ -1,4 +1,5 @@
 /* eslint-disable linebreak-style */
+/* eslint-disable no-console */
 import React from 'react';
 // @ts-ignore
 import TinCan from 'tincanjs';
@@ -38,6 +39,9 @@ const fields = [
 ];
 
 const App = () => {
+  const query = new URLSearchParams();
+  const token = query.get('token');
+  console.log('token', token);
   /* eslint-disable */
   /* The above line is also needed to exclude the console log. */
   /* It's temporary, so when no longer needed remove this and the log. */
