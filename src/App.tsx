@@ -5,10 +5,8 @@ import React from 'react';
 import TinCan from 'tincanjs';
 import './App.css';
 // @ts-ignore
-import Cmi5AU from 'react-cmi5';
 import DynamicForm from './components/dynamicForms/DynamicForm';
-import SingleQuestionAu from './components/cmi5/single-question-au';
-import AuSendsMultipleScoresInResult from './components/cmi5/au-sends-multiple-scores-in-result';
+import Cmi5App from './components/cmi5/Cmi5App';
 
 const fields = [
   {
@@ -89,10 +87,7 @@ const App = () => {
         </a>
       </header>
       <section className="Sections">
-        <Cmi5AU>
-          <SingleQuestionAu />
-          <AuSendsMultipleScoresInResult />
-        </Cmi5AU>
+          <Cmi5App />
       </section>
       <section className="Sections">
         <DynamicForm
