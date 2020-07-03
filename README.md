@@ -355,7 +355,7 @@ This shows a basic setup that uses three libraries
 - cmi5Controller.js
 - cmi5Wrapper.js 
 
-FOr the last two, [see](https://github.com/adlnet/cmi5-Client-Library/tree/master/Examples/Scripts).  The first lib can be installed in the usual way.
+For the last two, [see](https://github.com/adlnet/cmi5-Client-Library/tree/master/Examples/Scripts).  The first lib can be installed in the usual way.
 
 ```bash
 npm i xapiwrapper
@@ -369,6 +369,79 @@ For now we will have to go old school and include the scripts by hand:
 <script src="Scripts/cmi5Controller.js"></script>
 <script src="Scripts/cmi5Wrapper.js"></script>
 ```
+
+But actually, I'm not sure how to import these libs.  I'm not sure if there is a clean way to do this, so I will try the blunt force approach.
+
+I copy the files to a lib directory in the component directory and do this:
+
+```js
+import cmi5Controller from './lib/cmi5Controller';
+```
+
+TypeScript doesn't like this and says:
+
+```js
+File 'c:/Users/timof/repos/timofeysie/dynamic-forms/src/components/cmi5/lib/cmi5Controller.js' is not a module.ts(2306)
+No quick fixes available
+```
+
+Open up the file and it's an ESLint nightmare of red.  Right off, the use of var is offensive.
+
+I remember TypeScript being sold as like a dial that could could turn up or down if you wanted to.  What happened to that idea?  Alright, to be fair, this is TSLint and VSCode, so slow down there Tex.
+
+Rant over, tried this at the top of the file:
+
+```js
+ /* eslint-disable */
+ export module Cmi5Controller {
+   ...
+ ```
+
+But it says *Prefer default export.*
+
+So try this:
+
+```js
+const Cmi5Controller = () => {
+  ...
+}
+export default Cmi5Controller;
+```
+
+Then the ```setEndPoint``` functions have this error:
+
+```txt
+Property 'setEndPoint' does not exist on type '() => { startUp: (callBack: any, errorCallBack: any) => void; getAUActivityId: () => any; getMasteryScore: () => any; getReturnUrl: () => any; getContextActivities: () => any; getContextExtensions: () => any; ... 15 more ...; sendStatement: (statement_: any, callback_: any) => void; }'.ts(2339)
+```
+
+That's referring to this is the code:
+
+```js
+  // **********************
+  // Public functions
+  // **********************
+  return {
+    // cmi5 controller initialization
+    startUp: function (callBack, errorCallBack) {
+```
+
+That's a whole can of worms.
+
+This import will work:
+
+```js
+import './lib/cmi5Controller';
+```
+
+But still, we can't use the controller in any way.  Will this require an overhaul?  Why isn't it a npm package.  There may be no quick fix here.
+
+One option is to post a question on [the thread where I learned about cmi5](https://github.com/AICC/CMI-5_Spec_Current/blob/quartz/cmi5_spec.md#9551-progress).  It's not on topic but maintainers like Brian Miller are active on that thread.
+
+The [client library](https://github.com/adlnet/cmi5-Client-Library) is over five years old now.  There are no issues tracked on that repo.  Are there any npm packages that could be used in a modern React app using TypeScript?
+
+If no one has made an npm package in the past five years, is there even enough interest in this spec to justify doing so?
+
+Another option is to create an issue on the spec.  This seems more appropriate so I have asked [this question there](https://github.com/AICC/CMI-5_Spec_Current/issues/606).
 
 #### Configuration steps
 

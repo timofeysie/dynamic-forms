@@ -5,9 +5,8 @@ import React from 'react';
 import TinCan from 'tincanjs';
 import './App.css';
 // @ts-ignore
-import Cmi5AU from 'react-cmi5';
 import DynamicForm from './components/dynamicForms/DynamicForm';
-import Cmi5 from './components/cmi5/Cmi5';
+import Cmi5App from './components/cmi5/Cmi5App';
 
 const fields = [
   {
@@ -88,9 +87,7 @@ const App = () => {
         </a>
       </header>
       <section className="Sections">
-        <Cmi5AU>
-          <Cmi5 />
-        </Cmi5AU>
+          <Cmi5App />
       </section>
       <section className="Sections">
         <DynamicForm

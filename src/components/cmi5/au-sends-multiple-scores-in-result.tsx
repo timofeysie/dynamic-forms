@@ -22,13 +22,6 @@ export default class AuSendsMultipleScoresInResult extends Component<
   IExampleQuestionState
 > {
   constructor(props: IExampleQuestionProps) {
-    // const queryString = window.location.search;
-    // const urlParams = new URLSearchParams(queryString);
-    // cmi5Controller.setEndPoint(urlParams.get("endpoint"));
-    // cmi5Controller.setFetchUrl(urlParams.get("fetch"));
-    // cmi5Controller.setRegistration(urlParams.get("registration"));
-    // cmi5Controller.setActivityId(urlParams.get("activityid"));
-    // cmi5Controller.setActor(urlParams.get("actor"));
     super(props);
     this.state = {
       knowledgeComponents: {

@@ -9,7 +9,7 @@ import Cmi5AU from "react-cmi5";
 import SingleQuestionAu from "./single-question-au";
 import AuSendsMultipleScoresInResult from "./au-sends-multiple-scores-in-result";
 
-const Cmi5 = () => {
+const Cmi5App = () => {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const endpoint = urlParams.get("endpoint");
@@ -18,7 +18,7 @@ const Cmi5 = () => {
   const activityid = urlParams.get("activityid");
   const actor = urlParams.get("actor");
 
-  console.log('--------')
+  console.log('--------');
   console.log('endpoint:', endpoint);
   console.log('fetch:', fetch);
   console.log('registration:', registration);
@@ -38,4 +38,4 @@ const Cmi5 = () => {
     </Cmi5AU>
   );
 };
-export default Cmi5;
+export default Cmi5App;
