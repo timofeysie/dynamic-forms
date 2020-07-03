@@ -137,15 +137,21 @@ Another example is the [location tour demo](https://xapi.com/wp-content/assets/C
 
 ### [Issue #15](https://github.com/timofeysie/dynamic-forms/issues/15)
 
-What is cmi5?
+What is cmi5?  It's not actually that easy to figure out.  Various answers include:
 
-A set of “extra rules” for xAPI.  cmi5 is a “profile” for using the xAPI specification with traditional learning management (LMS) systems.
+- A set of “extra rules” for xAPI.  
+- cmi5 is a “profile” for using the xAPI specification with traditional learning management (LMS) systems.
+- It clarifies the use of the xAPI in the traditional e-learning domain.
 
 I've used the xAPI before for e-learning project, and lurk around the spec project.  One issue that came up ended up having a comment about cmi5 which appears to be a stripped down/focused use case of the xAPI.
 
-These are some notes about what it is an how it's used.
+cmi5 probably stands for "computer managed instruction, fifth try", which ws published in 1993 and then became Scorm 1.2.
 
-You can read more on the AICC [Cmi5 project](https://github.com/AICC/CMI-5_Spec_Current/blob/quartz/cmi5_spec.md#overview).  What is AICC?  The title of their profile says only *The cmi5 Project xAPI Profile for LMS systems*.  That isn't exactly an acronym for AICC.
+One might think that the xAPI working committee failed at it's task at creating a standard for e-learning interactions.  Or maybe they wanted to fail and let companies specializing in the implementation use that as a barrier to entry to get more consulting work.
+
+What ever you decide, xAPI + cmi5 are the most recent elearning standard.  These are some notes about what they are and how they're used.
+
+You can read more on the AICC [Cmi5 project](https://github.com/AICC/CMI-5_Spec_Current/blob/quartz/cmi5_spec.md#overview).  The title of their profile says only *The cmi5 Project xAPI Profile for LMS systems*.  That isn't exactly an acronym for AICC.
 
 The [Summary of cmi5 in Action](https://xapi.com/cmi5-technical-101) provides a good checklist for what we would want a client to implement:
 
@@ -163,9 +169,18 @@ The [Summary of cmi5 in Action](https://xapi.com/cmi5-technical-101) provides a 
 12. LMS may determine that a Session has been concluded without a “Terminated” statement having been recorded, at which point it records an “Abandoned” Statement
 Multiple sessions in various launch modes may occur for the same Registration
 
+[Here is the Edutech Wiki article on cmi5](http://edutechwiki.unige.ch/en/Cmi5).
+
 #### Sone definitions
 
 - Learning Management Systems (LMS)
+
+Defined as a system to register learners, launch learning presentations, analyze and report learner performance, and track learners' progress. LMS launching, reporting, and tracking roles are the focus of the cmi5 specification. 
+
+- Learning Record Store (LRS)  
+
+The LMS must have an LRS as part of its implementation to provide CRUD functionality.
+
 - Assignable Units (AU)
 
 The launch-able piece of content that includes the concepts of completion, pass/fail, score, and duration. Each course requires at least one AU. AU metadata is captured in the Course structure file, but content assets may be included in a package or hosted remotely.
@@ -367,23 +382,29 @@ Then we go through these steps:
 
 ##### 1. Parse launch parameters
 
-Here we get the params from the url.  An example looks like this:
+Here we get the params from the url.  An example formatted for readability looks like this:
 
 ```txt
-*url*/index.html?
-endpoint=https://cloud.scorm.com/ScormEngineInterface/TCAPI/public/&auth=Basic VGVzdFVzZXI6cGFzc3dvcmQ= &
-actor={
-  "mbox":"mailto:test@beta.projecttincan.com",
-  "name":"Test User",
-  "objectType":"Agent"
-} &
-registration=e168d6a3-46b2-4233-82e7-66b73a179727
+http://www.example.com/LA1/Start.html
+? endpoint = http://lrs.example.com/lrslistener/
+& fetch    = http://lms.example.com/tokenGen.htm?k=2390289x0
+& actor    = {
+                "objectType": "Agent",
+                   "account":  {
+                  "homePage": "http://www.example.com",
+                      "name": "1625378"
+                }
+            }
+ & registration = 760e3480-ba55-4991-94b0-01820dbd23a2
+ & activityId =   http://www.example.com/LA1/001/intro
 ```
 
-Encoded it would lindex.ook like this:
+Encoded it would look like this:
 
 ```txt
-*rl*/index.index.html%253Fendpoint%253Dhttps%253A%252F%252Fcloud.scorm.com%252FScormEngineInterface%252FTCAPI%252Fpublic%252F%2526auth%253DBasic%2520VGVzdFVzZXI6cGFzc3dvcmQ%253D%2526actor%253D%257B%2522mbox%2522%253A%2522mailto%253Atest%2540beta.projecttincan.com%2522%252C%2522name%2522%253A%2522Test%2520User%2522%252C%2522objectType%2522%253A%2522Agent%2522%257D%2526registration%253De...
+http://localhost:3000?endpoint=http://lrs.example.com/lrslistener/&fetch=http://lms.example.com/tokenGen.htm?k=2390289x0&actor= {
+"objectType":"Agent","account":{"homePage":"http://www.example.com",
+"name":"1625378"}}&registration=760e3480-ba55-4991-94b0-01820dbd23a2& activityId=http://www.example.com/LA1/001/intro
 ```
 
 These params are needed to configure the cmi5 controller will set functions like this:

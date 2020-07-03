@@ -7,8 +7,7 @@ import './App.css';
 // @ts-ignore
 import Cmi5AU from 'react-cmi5';
 import DynamicForm from './components/dynamicForms/DynamicForm';
-import SingleQuestionAu from './components/cmi5/single-question-au';
-import AuSendsMultipleScoresInResult from './components/cmi5/au-sends-multiple-scores-in-result';
+import Cmi5 from './components/cmi5/Cmi5';
 
 const fields = [
   {
@@ -90,8 +89,7 @@ const App = () => {
       </header>
       <section className="Sections">
         <Cmi5AU>
-          <SingleQuestionAu />
-          <AuSendsMultipleScoresInResult />
+          <Cmi5 />
         </Cmi5AU>
       </section>
       <section className="Sections">
